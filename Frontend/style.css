@@ -1,0 +1,497 @@
+body {
+    background: rgb(206, 185, 132);
+}
+
+/*Backup za svaki slucaj?*/
+/* .store-btn, .computers-btn, .hardware-btn, .store-method-add-btn, .store-method-compAdd-btn, 
+.store-method-return-btn, .store-method-showData-btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex: 1;
+    
+    min-height: 5rem;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.75rem;
+    cursor: pointer;
+
+    transition: all 0.65s ease;
+} */
+
+.store-btn, .computers-btn, .hardware-btn {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex: 1;
+    
+    min-height: 5rem;
+    border: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.75rem;
+    cursor: pointer;
+
+    transition: all 0.65s ease;
+}
+
+.store-btn {
+    color: white;
+    border-top-left-radius: 6px;
+    /* background-color: #093145; */
+    /* background:	#698cbd; */
+    background: #70aca8;
+}
+
+.computers-btn {
+    color: white;
+    /* background-color: #107896; */
+    /* background: #169385; */
+    background: #017f71;
+}
+
+.hardware-btn {
+    color: white;
+    border-top-right-radius: 6px;
+    /* background-color: #829356; */
+    background: #917c9b;
+}
+
+.store-btn:hover {
+    color: #70aca8;
+    background: white;
+}
+
+.computers-btn:hover {
+    color: #017f71;
+    background: white;
+}
+
+.hardware-btn:hover {
+    color: #917c9b;
+    background: white;
+}
+
+.menu-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    min-width: max-content;
+}
+
+.second-container {
+
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    /* justify-content: space-between; */
+    align-items: flex-start;
+    gap: 4%;
+    min-height: 100%;
+
+    border-bottom-left-radius: 6px;     /*Da dobijemo zaoljenje ivice*/
+    border-bottom-right-radius: 6px;
+
+    padding: 1rem 1rem;     /*Odaljenost od desne i leve ivice*/
+    padding-top: 1rem;      /*Odaljenost od gornje ivice*/
+    padding-bottom: 1rem;   /*Odaljenost od donje ivice*/
+
+    color: white;
+    background: #70aca8;
+    border: none;
+    transition: background 0.65s linear;
+}
+
+/* .store-method-container {
+    display: flex;
+    flex-direction: column;
+    background: #2b98b6;
+
+    flex-basis: 28%;
+    transition: background 0.65s linear;
+} */
+
+/* .computer-method-container {
+    display: flex;
+    flex-direction: column;
+    background: #aaccdd;
+
+    flex-basis: 28%;
+    transition: background 0.65s linear;
+} */
+
+.method-container {
+    display: flex;
+    flex-direction: column;
+    /* background: #2b98b6; */
+    /* width: 28%; */
+    flex-basis: 28%;
+    transition: background 0.65s linear;
+}
+
+.method-container-super {
+    display: flex;
+    flex-direction: column;
+
+    /* align-items: stretch; */
+    flex-basis: 56%;
+    transition: all 0.65s linear;
+}
+
+/*Sve je ovo sad .button klasam u kombinaciji sa odabirom boja i tranzicija za svako dugme posebno*/
+/* .store-method-add-btn, .store-method-compAdd-btn, .store-method-return-btn,
+.store-method-showData-btn, .store-save-btn {
+    font-size: 1.175rem;
+    gap: 0.65rem;
+    min-height: 3.5rem;
+    margin-bottom: 1rem;
+    border: none;
+
+    background:	#3e5a68;
+    border-radius: 4px;
+    color: white;
+} */
+
+.button {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.175rem;
+    gap: 0.65rem;
+    min-height: 3.5rem;
+    margin-bottom: 1rem;
+    border: none;
+    align-self: stretch;
+    width: 100%;
+
+    /* background:	#3e5a68; */
+    border-radius: 4px;
+    color: white;
+    transition: all 0.65s ease;
+}
+
+.store-method-btn {
+    background:	#53817e;
+    width: 80%;
+}
+
+.store-method-btn:hover {
+    background: white;
+    color: #53817e;
+}
+
+.computer-method-btn {
+    background: #065f55;
+    width: 80%
+}
+
+.computer-method-btn:hover {
+    background: white;
+    color: #065f55;
+}
+
+
+
+/* .add-computer-to-database-btn, .add-hardware-to-computer-btn, .return-info-on-computer-btn,
+.where-to-buy-computer-btn, .return-computer-hardware-btn, .edit-computer-price-btn,
+.remove-hardware-from-computer-btn {
+    font-size: 1.175rem;
+    gap: 0.65rem;
+    min-height: 3.5rem;
+    margin-bottom: 1rem;
+    border: none;
+
+    background:	#107896;
+    border-radius: 4px;
+    color: white;
+} */
+
+/* .add-computer-to-database-btn:hover, .add-hardware-to-computer-btn:hover, .return-info-on-computer-btn:hover,
+.where-to-buy-computer-btn:hover, .return-computer-hardware-btn:hover, .edit-computer-price-btn:hover,
+.remove-hardware-from-computer-btn:hover {
+    color: white;
+    background: #107896;
+} */
+
+/* .store-save-btn {
+    align-self: center;
+} */
+
+/* .store-method-add-btn:hover, .store-method-compAdd-btn:hover, .store-method-return-btn:hover, .store-method-showData-btn:hover{
+    background: white;
+    color:#3e5a68;
+} */
+
+/* .store-input-container {
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+
+    flex-basis: 28%;
+
+    min-height: 3.5rem;
+    font-size: 1.175rem;
+    transition: all 0.65s ease;
+} */
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+
+    flex-basis: 28%;
+
+    min-height: 3.5rem;
+    font-size: 1.175rem;
+    transition: all 0.65s ease;
+}
+
+.small-div-blue {
+    background: #53817e;
+}
+
+.small-div-lightgreen {
+    background: #065f55;
+}
+
+.small-div-container {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    justify-items: center;
+    align-items: center;
+
+    font-size: 1.175rem;
+    gap: 1rem;
+    min-height: 3.5rem;
+    margin-bottom: 1rem;
+
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    border: none;
+    border-radius: 4px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.input-store {
+    width: 60%;
+    height: 1.175rem;
+    border: none;
+    border-radius: 4px;
+}
+
+.input-element {
+    width: 60%;
+    height: 1.175rem;
+    border: none;
+    border-radius: 4px;
+}
+
+.input-store:hover {
+    cursor: text;
+}
+
+.simple-label {
+    width: 30%;
+}
+
+.simple-label-wide {
+    width: 100%;
+}
+
+/* .store-save-btn {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex: 1;
+
+    cursor: pointer;
+    transition: all 0.65s ease;
+    font-size: 1.175rem;
+    min-height: 3.5rem;
+    gap: 10%;
+    
+    margin-bottom: 1rem;
+    gap: 0.65rem;
+    width: 85%;
+
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+} */
+
+/* .store-save-btn:hover {
+    background: white;
+    color: #3e5a68;
+} */
+
+/*Backup za svaki slucaj*/
+/* .store-select-list {
+    
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    max-width: 60%;
+    height: 1.175rem;
+
+    border: none;
+    border-radius: 4px;
+} */
+
+.select-list {
+    
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    max-width: 60%;
+    height: 1.175rem;
+
+    border: none;
+    border-radius: 4px;
+}
+
+.table {
+    /* background: #3e5a68; */
+    border: none;
+    border-radius: 4px;
+    transition: all 1s ease;
+}
+
+.table-store {
+    background: #53817e;
+}
+
+.table-computer {
+    background: #065f55;
+}
+
+.table-head {
+    /* border-width: 4px; */
+    /* border: 2px solid black; */
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.175rem;
+    border-bottom: 2px solid #ddd;
+    text-align: left;
+    /* background: #3e5a68; */
+}
+
+.table-head-store {
+    background: #53817e;
+}
+
+.table-head-computer {
+    background: #065f55;
+}
+
+.table-row, table-row-store, table-row-computer {
+    transition: all 1s ease;
+}
+
+.table-row-store:hover {
+    background: white;
+    color: #53817e;
+}
+
+.table-row-computer:hover {
+    background: white;
+    color: #065f55;
+}
+
+.table-cell {
+    padding-right: 1rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.175rem;
+    border-bottom: 1px solid #ddd;
+}
+
+/* .store-status-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.33rem;
+
+    border: none;
+    border-radius: 4px;
+
+    background: #3e5a68;
+
+    min-width: 66%;
+    
+} */
+
+.status-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.33rem;
+
+    border: none;
+    border-radius: 4px;
+
+    /* background: #3e5a68; */
+
+    min-width: 66%;
+    /*Sve sto pise status i show ne pipaj, jedva namesti!*/
+}
+
+.status-container-store {
+    background: #53817e;
+}
+
+.data-show-div-container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    /* width: 100%; */
+    min-width: 0;
+
+    border: none;
+    border-radius: 4px;
+
+    justify-content: flex-start;
+    align-items: center;
+
+    padding: 0.65rem 0.65rem;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+
+    transition: all 1s ease;
+}
+
+.data-show-div-container:hover {
+    background: white;
+    color:#3e5a68;
+}
+
+.occupied-status {
+    background: red;
+}
+
+.shelfs-status {
+    background: green;
+}
+
+.smaller-div-container {
+    display: flex;
+    flex-direction: row;
+    border: dashed 1px white;
+    border-radius: 4px;
+
+    min-height: 1rem;
+    min-width: 5rem;
+}
+
+.data-show-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.175rem;
+}
