@@ -328,15 +328,16 @@ namespace WebAPI.Controllers
             }
         }
 
+        //Ovde sam dodao await i na kraju ToListAsync();
         [Route("VratiSveProdavnice")]
         [HttpGet]
         public async Task<ActionResult> VratiSveProdavnice() {
             if(Context.Stores == null)
                 return BadRequest("Nema prodavnica u bazi podatak!");
             else {
-                var lista = Context.Stores
+                var lista = await Context.Stores
                                    .Include(p => p.StoreComputer)
-                                   .ThenInclude(p => p.Computer).ToList();
+                                   .ThenInclude(p => p.Computer).ToListAsync();
                                 //    .ThenInclude(p => p.ComputerHardware)
                                 //    .ThenInclude(p => p.Hardware).ToList();
                                    /*Ne moze kao .ToListAsync(), pravi gresku zato sto ucitava vise 
@@ -365,7 +366,7 @@ namespace WebAPI.Controllers
                     );
             }
         }
-        
+
 
         // [Route("VratiListuSamoImenaKomponentaOvogRacunara/{name}")]
         // [HttpGet]
@@ -401,6 +402,7 @@ namespace WebAPI.Controllers
         //     }
         // }
 
+        //Ovde sam promenio await i ToListAsync()
         [Route("GdeMoguDaKupimOvajRacunar/{name}")]
         [HttpGet]
         public async Task<ActionResult> GdeMoguDaKupimOvajRacunar(string name) {
@@ -410,9 +412,9 @@ namespace WebAPI.Controllers
                 if(Context.Stores == null || Context.Computers == null)
                     return BadRequest("U bazi podataka nemamo informacija o racunarima ili o prodavnicama, ili nedostaju podaci za obe stavke?");
                 else {
-                    var lista = Context.Computers
+                    var lista = await Context.Computers
                                        .Include(p => p.ComputerStore)
-                                       .ThenInclude(p => p.Store).ToList();
+                                       .ThenInclude(p => p.Store).ToListAsync();
                     var trazeni = lista.Where(p => p.ComputerName == name).FirstOrDefault();
                     if(trazeni == null)
                         return BadRequest("Nemamo podatke o racunaru cije ste ime uneli!");
@@ -440,10 +442,10 @@ namespace WebAPI.Controllers
                 if(Context.Computers == null)
                     return BadRequest("Nema racunara u bazi podataka!");
                 else {
-                    var lista = Context.Computers
+                    var lista = await Context.Computers
                                        .Include(p => p.ComputerHardware)
                                        .ThenInclude(p => p.Hardware)
-                                       .ToList();
+                                       .ToListAsync();
                     var trazeni = lista.Where(p => p.ComputerName == name).FirstOrDefault();
                     if(trazeni == null)
                         return BadRequest("Trazeni racunar se ne nalazi u bazi podataka!");
@@ -463,6 +465,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        //Ovde sam promenio await i ToListAsync()
         [Route("VratiZauzetostSvihProdavnica")]
         [HttpGet]
         public async Task<ActionResult> VratiZauzetostSvihProdavnica() {
@@ -470,7 +473,7 @@ namespace WebAPI.Controllers
                 return BadRequest("Nema prodavnica u nasoj bazi podataka!");
             }
             else {
-                var lista = Context.Stores.Include(p => p.StoreComputer);
+                var lista = await Context.Stores.Include(p => p.StoreComputer).ToListAsync();
                 
                 //Iz nekog razloga mi ne dozvoljava da ucitam .Include(p => p.StoreComputer).ThenInclude(p => p.Shelf);
 

@@ -561,46 +561,82 @@ export class Company {
                             console.log(computer);
                             resultList.push(computer);
                         });
+
+                        let table = document.createElement('table');
+                        table.classList.add('table');
+                        table.classList.add('table-computer');
+
+                        console.log('ovde smo!');
+
+                        let listaTabela = ["Store", "Address"];
+                        listaTabela.forEach(s => {
+                            let th = document.createElement("th");
+                            th.classList.add('table-head');
+                            th.classList.add('table-head-computer');
+                            let text = document.createTextNode(s);
+
+                            th.appendChild(text);
+                            table.appendChild(th);
+                        })
+
+                        console.log(resultList.length);
+
+                        resultList.forEach(s => {
+                            let row = table.insertRow();
+                            row.classList.add('table-row')
+                            row.classList.add('table-row-computer');
+                            let listaOpcija = [s.prodavnica, s.adresa];
+                            for (let key in listaOpcija) {
+                                let cell = row.insertCell();
+                                cell.classList.add('table-cell');
+                                let text = document.createTextNode(listaOpcija[key]);
+                                cell.appendChild(text);
+                            }
+                        })
+
+                        console.log('ovde smo!');
+
+                        superContainer.appendChild(table);
                     })
                 })
 
                 console.log(resultList);
 
-                let table = document.createElement('table');
-                table.classList.add('table');
-                table.classList.add('table-computer');
+                // let table = document.createElement('table');
+                // table.classList.add('table');
+                // table.classList.add('table-computer');
 
-                console.log('ovde smo!');
+                // console.log('ovde smo!');
 
-                let listaTabela = ["Store", "Address"];
-                listaTabela.forEach(s => {
-                    let th = document.createElement("th");
-                    th.classList.add('table-head');
-                    th.classList.add('table-head-computer');
-                    let text = document.createTextNode(s);
+                // let listaTabela = ["Store", "Address"];
+                // listaTabela.forEach(s => {
+                //     let th = document.createElement("th");
+                //     th.classList.add('table-head');
+                //     th.classList.add('table-head-computer');
+                //     let text = document.createTextNode(s);
 
-                    th.appendChild(text);
-                    table.appendChild(th);
-                })
+                //     th.appendChild(text);
+                //     table.appendChild(th);
+                // })
 
-                console.log(resultList.length);
+                // console.log(resultList.length);
 
-                resultList.forEach(s => {
-                    let row = table.insertRow();
-                    row.classList.add('table-row')
-                    row.classList.add('table-row-computer');
-                    let listaOpcija = [s.prodavnica, s.adresa];
-                    for (let key in listaOpcija) {
-                        let cell = row.insertCell();
-                        cell.classList.add('table-cell');
-                        let text = document.createTextNode(listaOpcija[key]);
-                        cell.appendChild(text);
-                    }
-                })
+                // resultList.forEach(s => {
+                //     let row = table.insertRow();
+                //     row.classList.add('table-row')
+                //     row.classList.add('table-row-computer');
+                //     let listaOpcija = [s.prodavnica, s.adresa];
+                //     for (let key in listaOpcija) {
+                //         let cell = row.insertCell();
+                //         cell.classList.add('table-cell');
+                //         let text = document.createTextNode(listaOpcija[key]);
+                //         cell.appendChild(text);
+                //     }
+                // })
 
-                console.log('ovde smo!');
+                // console.log('ovde smo!');
 
-                superContainer.appendChild(table);
+                // superContainer.appendChild(table);
 
             });
 
@@ -676,41 +712,74 @@ export class Company {
                             hardwareList.push(hardware);
                             // console.log(computer);
                         });
+                        let table = document.createElement('table');
+                        table.classList.add('table');
+                        table.classList.add('table-computer');
+
+                        let listaTabela = ["Component", "Type", "Price"];
+                        listaTabela.forEach(s => {
+                            let th = document.createElement("th");
+                            th.classList.add('table-head');
+                            th.classList.add('table-head-computer');
+                            let text = document.createTextNode(s);
+
+                            th.appendChild(text);
+                            table.appendChild(th);
+                        })
+
+                        console.log(hardwareList.length);
+
+                        hardwareList.forEach(s => {
+                            let row = table.insertRow();
+                            row.classList.add('table-row')
+                            row.classList.add('table-row-computer');
+                            let listaOpcija = [s.nazivKomponente, s.tipKomponente, s.cenaKomopnente];
+                            for (let key in listaOpcija) {
+                                let cell = row.insertCell();
+                                cell.classList.add('table-cell');
+                                let text = document.createTextNode(listaOpcija[key]);
+                                cell.appendChild(text);
+                            }
+                        })
+                        // console.log('ovde smo!');
+
+                        superContainer.appendChild(table);
+
                     })
                 })
 
-                let table = document.createElement('table');
-                table.classList.add('table');
-                table.classList.add('table-computer');
+                // let table = document.createElement('table');
+                // table.classList.add('table');
+                // table.classList.add('table-computer');
 
-                let listaTabela = ["Component", "Type", "Price"];
-                listaTabela.forEach(s => {
-                    let th = document.createElement("th");
-                    th.classList.add('table-head');
-                    th.classList.add('table-head-computer');
-                    let text = document.createTextNode(s);
+                // let listaTabela = ["Component", "Type", "Price"];
+                // listaTabela.forEach(s => {
+                //     let th = document.createElement("th");
+                //     th.classList.add('table-head');
+                //     th.classList.add('table-head-computer');
+                //     let text = document.createTextNode(s);
 
-                    th.appendChild(text);
-                    table.appendChild(th);
-                })
+                //     th.appendChild(text);
+                //     table.appendChild(th);
+                // })
 
-                console.log(hardwareList.length);
+                // console.log(hardwareList.length);
 
-                hardwareList.forEach(s => {
-                    let row = table.insertRow();
-                    row.classList.add('table-row')
-                    row.classList.add('table-row-computer');
-                    let listaOpcija = [s.nazivKomponente, s.tipKomponente, s.cenaKomponente];
-                    for (let key in listaOpcija) {
-                        let cell = row.insertCell();
-                        cell.classList.add('table-cell');
-                        let text = document.createTextNode(listaOpcija[key]);
-                        cell.appendChild(text);
-                    }
-                })
-                // console.log('ovde smo!');
+                // hardwareList.forEach(s => {
+                //     let row = table.insertRow();
+                //     row.classList.add('table-row')
+                //     row.classList.add('table-row-computer');
+                //     let listaOpcija = [s.nazivKomponente, s.tipKomponente, s.cenaKomponente];
+                //     for (let key in listaOpcija) {
+                //         let cell = row.insertCell();
+                //         cell.classList.add('table-cell');
+                //         let text = document.createTextNode(listaOpcija[key]);
+                //         cell.appendChild(text);
+                //     }
+                // })
+                // // console.log('ovde smo!');
 
-                superContainer.appendChild(table);
+                // superContainer.appendChild(table);
             });
         });
 

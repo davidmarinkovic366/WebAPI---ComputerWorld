@@ -1,5 +1,7 @@
 body {
-    background: rgb(206, 185, 132);
+    /* background: rgb(206, 185, 132); */
+    background: rgb(197, 183, 169);
+
 }
 
 /*Backup za svaki slucaj?*/
@@ -93,7 +95,7 @@ body {
     gap: 4%;
     min-height: 100%;
 
-    border-bottom-left-radius: 6px;     /*Da dobijemo zaoljenje ivice*/
+    border-bottom-left-radius: 6px;     /*Da dobijemo zaobljenje ivice*/
     border-bottom-right-radius: 6px;
 
     padding: 1rem 1rem;     /*Odaljenost od desne i leve ivice*/
