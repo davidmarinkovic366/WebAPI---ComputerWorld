@@ -41,44 +41,51 @@ namespace WebAPI.Controllers
             }
         }
 
-        [Route("DodajHardver/{name}/{tip}/{info}/{price}")]
+        [Route("DodajHardver/{name}/{tip}/{info}/{price}/{image}")]
         [HttpPost]
-        public async Task<ActionResult> DodajHardver(string name, string tip, string info, int price) {
-            var tp = Context.Types.Where(p => p.ComponenaTip == tip).FirstOrDefault();
-            
-            if(tp == null)
-                return BadRequest("Uneli ste pogresan tip!");
-            
+        public async Task<ActionResult> DodajHardver(string name, int tip, string info, int price, string image) {
+            if(tip == 0 || String.IsNullOrEmpty(name) || String.IsNullOrEmpty(info) || String.IsNullOrEmpty(image) || price <= 0)
+                return BadRequest("Niste uneli sve podatke!");
             else {
-                Hardware novi = new Hardware();
-                novi.HardwareName = name;
-                novi.HardwarePrice = price;
-                novi.HardwareInfo = info;
-                novi.TipID = tp.ID;
 
-                try {
-                    Context.Hardwares.Add(novi);
-                    await Context.SaveChangesAsync();
-                    return Ok($"Dodata je nova komponenta sa imenom: {novi.HardwareName}, informacijama: {novi.HardwareInfo}, cenom: {novi.HardwarePrice} sa id-jem: {novi.ID}");
-                }
-                catch(Exception ex) {
-                    return BadRequest(ex.Message);
-                }
+                var type = Context.Types.Where(p => p.ID == tip).FirstOrDefaultAsync();
+
+                if(type == null) {
+                    return BadRequest("Ovaj tip komponente ne postoji u bazi podataka!");
+                }                
+                else {}
+
+                    Hardware nova = new Hardware();
+                    nova.HardwareName = name;
+                    nova.HardwareInfo = info;
+                    nova.Image = image;
+                    nova.HardwarePrice = price;
+                    nova.TipID = type.Id;
+
+                    try {
+                        Context.Hardwares.Add(nova);
+                        await Context.SaveChangesAsync();
+                        return Ok("Novi hardver je dodat u bazu podataka!");
+                    }   
+                    catch(Exception ex) {
+                        return BadRequest(ex.Message);
+                    }
             }
         }
 
-        [Route("DodajRacunar/{name}")]
+        [Route("DodajRacunar/{name}/{image}")]
         [HttpPost]
-        public async Task<ActionResult> DodajRacunar(string name) {
-            if(String.IsNullOrEmpty(name))
+        public async Task<ActionResult> DodajRacunar(string name, string image) {
+            if(String.IsNullOrEmpty(name) || String.IsNullOrEmpty(image))
                 return BadRequest("Niste uneli ime racunara!");
             else {
                 Computer cmp = new Computer();
                 cmp.ComputerName = name;
+                cmp.Image = image;
                 try {
                     Context.Computers.Add(cmp);
                     await Context.SaveChangesAsync();
-                    return Ok($"Dodat je racunar sa imenom: {cmp.ComputerName} sa id-jem: {cmp.ID}");
+                    return Ok($"Dodat je racunar sa imenom: {cmp.ComputerName} sa id-jem: {cmp.ID} i slikom: {cmp.Image}");
                 }
                 catch(Exception ex) {
                     return BadRequest(ex.Message);
@@ -88,13 +95,14 @@ namespace WebAPI.Controllers
 
         [Route("DodajKomponentuRacunaru/{rac}/{hrdw}")]
         [HttpPost]
-        public async Task<ActionResult> DodajKomponentuRacunaru(string rac, string hrdw) {
-            if(String.IsNullOrEmpty(rac) || String.IsNullOrEmpty(hrdw))
+        public async Task<ActionResult> DodajKomponentuRacunaru(int rac = 0, int hrdw = 0) {
+            // if(String.IsNullOrEmpty(rac) || String.IsNullOrEmpty(hrdw))
+            if(rac == 0 || hrdw == 0)
                 return BadRequest("Niste uneli racunar ili komponentu!");
             else {
                 try {
-                    var racunar = Context.Computers.Where(p => p.ComputerName == rac).FirstOrDefault();
-                    var hardver = Context.Hardwares.Where(p => p.HardwareName == hrdw).FirstOrDefault();
+                    var racunar = Context.Computers.Where(p => p.ID == rac).FirstOrDefault();
+                    var hardver = Context.Hardwares.Where(p => p.ID == hrdw).FirstOrDefault();
 
                     if(racunar == null || hardver == null)
                         return BadRequest("Racunar ili hardver sa zadatim imenom ne postoje u listi!");
@@ -276,23 +284,27 @@ namespace WebAPI.Controllers
 
         [Route("VratiSveOvogTipa/{tip}")]
         [HttpGet]
-        public ActionResult VratiSveOvogTipa(string tip) {
-            if(String.IsNullOrEmpty(tip))
+        public async Task<ActionResult> VratiSveOvogTipa(int tip = 0) {
+            // if(String.IsNullOrEmpty(tip))
+            if(tip == 0)
                 return BadRequest("Niste uneli trazeni tip!");
             else if(Context.Hardwares == null)
                 return BadRequest("Niste dodali ni jedan hardver u bazu podataka!");
             else {
-                var t = Context.Types.Where(p => p.ComponenaTip == tip).FirstOrDefault();
+                var t = await Context.Hardwares
+                               .Where(p => p.TipID == tip)
+                               .ToListAsync();
+
                 if(t == null)
-                    return BadRequest("Nazalost, ovaj tip hardvera ne postoji u prodavnici!");
+                    return BadRequest("Nema komponena ovog tipa u bazi podataka!");
                 else {
-                    var lista = Context.Hardwares.Where(p => p.TipID == t.ID).ToList();
-                    if(lista == null)
-                        return BadRequest("Nema hardvera ovog tipa u bazi, nzm kako ovo uopste moze da se prikaze kad svi postoje!");
-                    else 
-                        return Ok(lista);
+                    try {
+                        return Ok(t);
+                    }
+                    catch(Exception ex) {
+                        return BadRequest(ex.Message);
+                    }
                 }
-            
             }
         }
 
@@ -328,6 +340,74 @@ namespace WebAPI.Controllers
             }
         }
 
+        //FIXME: Sad pa ovo ne radi, napravili smo za racunar, vidi ovo nekako prepravi
+        //Ili mozemo da vratimo sav hardver pa da u js izvlacimo podatke? 
+        [Route("VratiKomponenteRacunara/{computerId}")]
+        [HttpGet]
+        public async Task<ActionResult> VratiKomponenteRacunara(int computerId = 0) {
+            if(computerId == 0)
+                return BadRequest("Morate da izaberete racunar!");
+            else {
+                // var comp = await Context.Computers
+                //                         .Where(p => p.ID == computerId)
+                //                         .Include(p => p.ComputerHardware)
+                //                         .ThenInclude(p => p.Hardware)
+                //                         .ThenInclude(p => p.HardwareName)
+                //                         .ToListAsync();
+                var comp = await Context.Contents
+                                        .Include(p => p.Computer)
+                                        .Include(p => p.Hardware)
+                                        .Where(p => p.Computer.ID == computerId)
+                                        .ToListAsync();
+
+                if(comp == null)
+                    return BadRequest("Navedeni racunar se ne nalazi u bazi podataka!");
+                else {
+                    //TODO: Pravimo string od naziva svih komponenta ovih racunara
+                    try {
+                        return Ok(comp.Select(p => 
+                            new {
+                                HardwareList = p.Hardware
+                            }));
+                    }
+                    catch(Exception ex) {
+                        return BadRequest(ex.Message);
+                    }
+                }
+            }
+        }
+
+        [Route("VratiHardverOvogRacunara/{hardw}")]
+        [HttpGet]
+        public async Task<ActionResult> VratiHardverOvogRacunara(int hardw = 0) {
+            if(hardw == 0)
+                return BadRequest("Niste izabrani ni jedan racunar!");
+            else {
+                var lista = await Context.Computers
+                                         .Where(p => p.ID == hardw)
+                                         .Include(p => p.ComputerHardware)
+                                         .ThenInclude(p => p.Hardware)
+                                         .ToListAsync();
+                if(lista == null)
+                    return BadRequest("Racunar nema hardvera!");
+                else {
+                    try {
+                        return Ok(lista.Select(p =>
+                                    new {
+                                        Hardver = p.ComputerHardware
+                                                   .Select(q => 
+                                                        new {
+                                                            hardver = q.Hardware
+                                                        })
+                                    }).ToList());
+                    }
+                    catch(Exception ex) {
+                        return BadRequest(ex.Message);
+                    }
+                }
+            }
+        }
+
         //Ovde sam dodao await i na kraju ToListAsync();
         [Route("VratiSveProdavnice")]
         [HttpGet]
@@ -338,10 +418,6 @@ namespace WebAPI.Controllers
                 var lista = await Context.Stores
                                    .Include(p => p.StoreComputer)
                                    .ThenInclude(p => p.Computer).ToListAsync();
-                                //    .ThenInclude(p => p.ComputerHardware)
-                                //    .ThenInclude(p => p.Hardware).ToList();
-                                   /*Ne moze kao .ToListAsync(), pravi gresku zato sto ucitava vise 
-                                    tablica odjednom, ni ne pokusavaj!*/
                 if(lista == null)
                     return BadRequest("Doslo je do neke greske?");
                 else 
@@ -360,10 +436,49 @@ namespace WebAPI.Controllers
                                     new 
                                         {
                                             ComputerName = q.Computer.ComputerName,
-                                            ComputerPrice = q.Computer.ComputerPrice
+                                            ComputerPrice = q.Computer.ComputerPrice,
+                                            ComputerId = q.Computer.ID,
+                                            Image = q.Computer.Image
                                         })
                             }).ToList()
                     );
+            }
+        }
+
+        [Route("VratiSveRacunareProdavnice/{storeID}")]
+        [HttpGet]
+        public async Task<ActionResult> VratiSveRacunareProdavnice(int storeID) {
+            if(storeID == 0)
+                return BadRequest("Morate da izaberete prodavnicu!");
+            else {
+                var prvalista = await Context.Stores
+                                             .Where(p => p.ID == storeID)
+                                             .Include(p => p.StoreComputer)
+                                             .ThenInclude(p => p.Computer)
+                                             .ToListAsync();
+                if(prvalista == null) {
+                    return BadRequest("Nema racunara!");
+                }
+                else {
+                    try {
+                        return Ok(prvalista.Select(p => 
+                            new {
+                                Racunari = p.StoreComputer
+                                            .Select(q =>
+                                                new {
+                                                    ComputerName = q.Computer.ComputerName,
+                                                    ComputerPrice = q.Computer.ComputerPrice,
+                                                    ComputerId = q.Computer.ID,
+                                                    Image = q.Computer.Image
+                                                    })
+
+                            })
+                        );
+                    }
+                    catch(Exception ex){
+                        return BadRequest(ex.Message);
+                    }
+                }
             }
         }
 
@@ -492,14 +607,14 @@ namespace WebAPI.Controllers
 
         #region HttpPut(update)
 
-        [Route("IzmeniCenuRacunara/{name}/{newPrice}")]
+        [Route("IzmeniCenuRacunara/{comp}/{newPrice}")]
         [HttpPut]
-        public async Task<ActionResult> IzmeniCenuRacunara(string name, int newPrice) {
-            if(String.IsNullOrEmpty(name) || newPrice < 0)
-                return BadRequest("Niste uneli ime racunara ili je cena manja od nule!");
+        public async Task<ActionResult> IzmeniCenuRacunara(int comp = 0, int newPrice = 0) {
+            if(comp == 0 || newPrice <= 0)
+                return BadRequest("Jedan ili vise unetih podataka nisu ispravni!");
             else {
                 try {
-                    var racunar = Context.Computers.Where(p => p.ComputerName == name).FirstOrDefault();
+                    var racunar = await Context.Computers.Where(p => p.ID == comp).FirstOrDefaultAsync();
                     if(racunar == null)
                         return BadRequest("Racunar sa ovim imenom ne postoji u bazi podataka!");
                     else {
@@ -522,23 +637,44 @@ namespace WebAPI.Controllers
 
         [Route("UkloniHardverIzRacunara/{computer}/{hardware}")]
         [HttpDelete]
-        public async Task<ActionResult> UkloniHardverIzRacunara(string computer, string hardware) {
-            if(String.IsNullOrEmpty(computer) || String.IsNullOrEmpty(hardware))
-                return BadRequest("Niste uneli ime racunara ili hardvera!");
+        public async Task<ActionResult> UkloniHardverIzRacunara(int computer = 0, int hardware = 0) {
+            if(computer == 0 || hardware == 0)
+                return BadRequest("Niste ispravno uneli neki podatak!");
             else {
-                var racunar = Context.Computers.Where(p => p.ComputerName == computer).FirstOrDefault();
-                var komponenta = Context.Hardwares.Where(p => p.HardwareName == hardware).FirstOrDefault();
-                var veze = Context.Contents.Where(p => p.Computer == racunar);  /*Ovde listu!*/
-                var veza = veze.Where(p => p.Hardware.HardwareName == hardware).FirstOrDefault();
                 try {
-                    racunar.ComputerPrice = racunar.ComputerPrice - komponenta.HardwarePrice;
-                    racunar.ComputerHardware.Remove(veza);
-                    await Context.SaveChangesAsync();
-                    return Ok($"Uklonjena komponenta: {komponenta.HardwareName} iz racunara: {racunar.ComputerName}");
+                    var veza = await Context.Contents
+                                               .Where(p => p.Computer.ID == computer && p.Hardware.ID == hardware)
+                                               .Include(p => p.Computer)
+                                               .Include(p => p.Hardware)
+                                               .FirstOrDefaultAsync();
+                    var komponenta = await Context.Hardwares
+                                                  .Where(p => p.ID == hardware)
+                                                  .FirstOrDefaultAsync();
+                    var racunar = await Context.Computers
+                                               .Where(p => p.ID == computer)
+                                               .FirstOrDefaultAsync();
+
+                    if(racunar == null || komponenta == null || veza == null)
+                        return BadRequest("Racunar ili ne postoji u bazi podataka, ili nema ni jednu komponentu!");
+                    else {
+                        racunar.ComputerPrice -= komponenta.HardwarePrice;
+                        racunar.ComputerHardware.Remove(veza);
+                        Context.Contents.Remove(veza);
+                        await Context.SaveChangesAsync();
+
+                        return Ok("Komponenta uspesno uklonjena iz racunara!");
+                    }
                 }
                 catch(Exception ex) {
                     return BadRequest(ex.Message);
                 }
+
+                //     racunar.ComputerPrice = racunar.ComputerPrice - komponenta.HardwarePrice;
+                //     racunar.ComputerHardware.Remove(veza);
+                //     await Context.SaveChangesAsync();
+                //     return Ok($"Uklonjena komponenta: {komponenta.HardwareName} iz racunara: {racunar.ComputerName}");
+                // }
+
             }
         }
 

@@ -22,5 +22,8 @@ namespace Models {
         public List<Shelf> ComputerStore { get; set; }
         /*Lista prodavnica u kojima se moze naci ovaj racunar*/
 
+        public string Image { get; set; }
+        /*Slika racunara koja se nalazi na serveru (putanja do nje)*/
+
     }
 }

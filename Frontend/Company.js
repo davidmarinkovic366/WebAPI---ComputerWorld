@@ -1,5 +1,7 @@
 import { Store } from "./Store.js";
 import { Computer } from "./Computer.js";
+import { Hardware } from "./Hardware.js";
+
 
 export class Company {
     constructor(name, storeList, computerList, hardwareList) {
@@ -8,952 +10,1294 @@ export class Company {
         this.computerList = computerList;
         this.hardwareList = hardwareList;
         this.container = null;
-        this.inputContainer = null;
     }
 
-    drawStoreMenu() {
-        console.log(`Kliknuli ste dugme za prodavnicu!`);
-        if(this.inputContainer != null)
-            this.emptyContainer(this.inputContainer);
-            
+    //FIXME: First options lists inside left menu(host/subMenu selector!) 
+    drawCompanyFunctionsMenu(host) {
         
-        if(this.container.childElementCount != 0) {
-            // emptySecondContainer();
-            this.container.style.background = "#70aca8";
-        }
-        else
-            this.container.style.background = "#70aca8";
-            
-        //Crtanje u store meni;
-    
-        //Selectors
-        const buttonClassList = ['store-method-add-btn', 'store-method-compAdd-btn', 'store-method-return-btn', 'store-method-showData-btn'];
-        const names = ['Add store', 'Add computer to store', 'Show all stores', 'Show occupancy'];
-        const imageList = ['<i class="fa-solid fa-plus"></i>', '<i class="fa-solid fa-laptop-medical"></i>', '<i class="fa-solid fa-magnifying-glass-location"></i>', '<i class="fa-solid fa-chart-pie"></i>']; 
-    
-    
-        let buttonAddStore = document.createElement('button');
-        let buttonAddComputerToStore = document.createElement('button');
-        let buttonReturnAllStores = document.createElement('button');
-        let buttonShowOccupience = document.createElement('button');
+        this.clearLeftMenu();
+
+        let list = ['Stores', 'Computers', 'Hardware'];
+        let selectList = [];
+        let selectSubList = [];
+
+        let list1 = ['Add Store', 'Add To Store', 'Show All Stores', 'Show Occupancy', 'Browse All Items'];
+        let list2 = ['Add Computer', 'Add Component', 'Computer Hardware', 'Change Price', 'Remove Component', 'Browse'];
+        let list3 = ['Add Hardware', 'Browse'];
+        let bigList = [list1, list2, list3];
+
+        let menuItemsContainer = document.createElement('div');
+        menuItemsContainer.classList.add('header-nav-sub-items-container');
+        // menuItemsContainer.innerHTML = 'Data' + 'Jos nesto';
+        host.appendChild(menuItemsContainer);
         
-        //Za automatizaciju dodavanja atributa dugmicima
-        let lista = [buttonAddStore, buttonAddComputerToStore, buttonReturnAllStores, buttonShowOccupience];
-        
-        //Dodavanje atributa dugmicima
-        for(let i = 0; i < 4; i++) {
-            lista[i].classList.add('button');
-            lista[i].classList.add('store-method-btn');
-            lista[i].innerHTML = names[i] + imageList[i];
-        }
+        for(let i = 0; i < list.length; i++) {
 
-        console.log(lista);
-    
-        //Pravimo kontejner za dugmice/metode za prodavnicu
-        const containerMethods = document.createElement('div');
-        containerMethods.classList.add('method-container');
-        for(let i = 0; i < lista.length; i++) {
-            containerMethods.appendChild(lista[i]);
-        }
-        console.log("Lista dugmica: ");
-        console.log(lista);
-    
-        this.container.appendChild(containerMethods);
-        containerMethods.style.background = this.container.style.background;
-    
-        //Events
-        buttonAddStore.addEventListener('click', addStoreMethod => {
-            //Brisemo sve sto se naslo unutar body-ja osim menija za izbor metoda
-            this.checkAndClear();
+            //Tekst linka
+            let link = document.createElement('a');
+            link.classList.add('header-nav-sub-item');
+            link.innerHTML = list[i] + '<i class="ri-arrow-down-s-line"></i>';
 
-            //Kontejner za input podataka za dodavanje prodavnice
-            let storeInputDiv = document.createElement('div');
-            storeInputDiv.classList.add('input-container');
+            //FIXME: Mozes da obrises ako lepo napravis za header-nav-sub-item da je centrirano
+            //Slika strelice na dole
+            // let linkButton = document.createElement('span');
+            // linkButton.classList.add('header-nav-sub-item-arrow');
+            // linkButton.innerHTML = '<i class="ri-arrow-down-s-line"></i>';
 
-            this.inputContainer = storeInputDiv;
+            //Kontejner za tekst i strelicu
+            //Promenio sam da je 'a' umesto div, ako pravi problem vrati!
+            //FIXME:
+            let smallLink = document.createElement('a');
+            smallLink.classList.add('header-nav-sub-items-small-link');
 
-            this.container.appendChild(storeInputDiv);
-    
-            let labelData = ['Name: ', 'Address: ', 'Shelf size: '];
-            let labelsList = [];
-            for(let i = 0; i < 3; i++) {
-                let label = document.createElement('label');
-                label.classList.add('simple-label');
-                label.innerHTML = labelData[i];
-                labelsList.push(label);
-            }
-    
-            let listaInputa = [];
-            let vrste = ['text', 'text', 'number'];
-            //Da bi mogli da grupisemo po dva elementa u flex-box u;
-            for(let i = 0; i < 3; i++) {
-                let smallDivContainer = document.createElement('div');
-                smallDivContainer.classList.add('small-div-container');
-                smallDivContainer.classList.add('small-div-blue');
+            //Dodavanje teksta i strelice u kontejner
+            smallLink.appendChild(link);
+            // smallLink.appendChild(linkButton);
 
-                let inputElement = document.createElement('input');
-                inputElement.type = vrste[i];
-                inputElement.classList.add('input-element');
+            //Kontejner za ovaj link i za dropdown listu
+            let smallNavDiv = document.createElement('div');
+            smallNavDiv.classList.add('header-nav-sub-items-small-div');
 
-                listaInputa.push(inputElement);
+            //Dodavanje linka
+            smallNavDiv.appendChild(smallLink);
+            smallNavDiv.addEventListener('click', () => {
 
-                smallDivContainer.appendChild(labelsList[i]);
-                smallDivContainer.appendChild(listaInputa[i]);
+                let openLists = document.querySelectorAll('.header-nav-sub-items-small-div');
+                openLists.forEach(p => {
+                    if(p !== smallNavDiv)
+                        if(p.classList.contains('header-nav-sub-items-small-div-clicked'))
+                            p.classList.remove('header-nav-sub-items-small-div-clicked');
+                });
 
-                storeInputDiv.appendChild(smallDivContainer);
-            }
+                if(smallNavDiv.classList.contains('header-nav-sub-items-small-div-clicked'))
+                    smallNavDiv.classList.remove('header-nav-sub-items-small-div-clicked');
+                else
+                    smallNavDiv.classList.add('header-nav-sub-items-small-div-clicked');
 
-            let buttonSave = document.createElement('button');
-            buttonSave.classList.add('button');
-            buttonSave.classList.add('store-method-btn');
-            buttonSave.innerHTML = 'Save' + '<i class="fa-solid fa-check-double"></i>';
-            storeInputDiv.appendChild(buttonSave);
 
-            buttonSave.addEventListener('click', saveStore => {
-                console.log(`Prodavnica: ${listaInputa[0].value} na adresi: ${listaInputa[1].value} sa shelf-size: ${listaInputa[2].value} je dodata!`);
-                listaInputa[0].value = "";
-                listaInputa[1].value = "";
-                listaInputa[2].value = null;
             });
 
-        });
+            //Dodavanje dropdown liste
+            let dropDownMenuItemList = document.createElement('div');
+            dropDownMenuItemList.classList.add('header-nav-sub-sub-items-div');
 
-        buttonAddComputerToStore.addEventListener('click', addComputerToStoreMethod => {
-            //Posto koristimo isti kontejner za input nekih korisnickih podataka, prvo moramo da prethodni obrisemo;
-            this.checkAndClear();
+            //Dodavanje jos jednog diva kao kontejner za sve linkove!
+            let dropDownMenuItemListContainer = document.createElement('div');
+            dropDownMenuItemListContainer.classList.add('header-nav-sub-sub-items-div-container');
+            // dropDownMenuItemListContainer.innerHTML = 'proba1223';
 
-            //Sam kontejner za input;
-            let storeInputDiv = document.createElement('div');
-            // storeInputDiv.classList.add('.store-input-container');
-            storeInputDiv.classList.add('input-container');
+            //Dodavanje kontejnera za upravljanje drop-down liste na originalni
+            //koji treba da se pojavi samo na poziv
+            dropDownMenuItemList.appendChild(dropDownMenuItemListContainer);
+            
+            //Dodavanje drop-down liste na linkove
+            smallNavDiv.appendChild(dropDownMenuItemList);
 
+            //TODO: Dodavanje sadrzaja samih dropdown listi:
 
-            //Dodajemo kontejner u body;
-            this.inputContainer = storeInputDiv;
-            this.container.appendChild(storeInputDiv);
+            for(let j = 0;  j < bigList[i].length; j++) {
+                //Link
+                let dropDownMenuItem = document.createElement('a');
+                dropDownMenuItem.classList.add('header-nav-drop-down-item');
 
-            //Kreiramo labele koje nam govore gde unosimo koje podatke;
-            let secondLabelData = ['Computer: ', 'To store: '];
-            let secondLabelList = [];
-            for(let i = 0; i < secondLabelData.length; i++) {
-                let label = document.createElement('label');
-                label.classList.add('simple-label');
-                label.innerHTML = secondLabelData[i];
+                //Sadrzaj samog linka
+                dropDownMenuItem.innerHTML = bigList[i][j] + '<i class="ri-arrow-drop-right-line"></i>';
 
-                secondLabelList.push(label);
+                //Dodavanje linka u listu za metode
+                selectSubList.push(dropDownMenuItem);
+
+                //TODO: Dodavanje linka u div na stranicu:
+                dropDownMenuItemListContainer.appendChild(dropDownMenuItem);
+            
             }
 
-            //Kreiramo same select liste i dodajemo ih u body, da ne bi duplirali kod, ovako je 
-            //automatizovano dodavanje;
-            let selectList = [];
-            for(let i = 0; i < 2; i++) {
-                let smallDivContainer = document.createElement('div');
-                smallDivContainer.classList.add('small-div-container');
-                smallDivContainer.classList.add('small-div-blue');
+            // menuItemsContainer.appendChild(smallLink);
+            menuItemsContainer.appendChild(smallNavDiv);
+            selectList.push(smallLink);
+        }
+
+        //TODO: adding events to links in left menu:
+        //TODO: Store method functions: 
+
+        //Add store to database function:
+        //Radi, gotovo!
+        selectSubList[0].addEventListener('click', () => {
+            console.log('Add store to database function');
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            //Container for drawing stuff on page
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+
+            this.container.appendChild(mainContainer);
+
+            //Container for all input elements
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+
+            mainContainer.appendChild(inputContainerDiv);
+
+            let inputList = [];
+
+            let labelList = ['Store Name:', 'Store Address:', 'Shelf count:'];
+            for(let i = 0; i < labelList.length; i++) {
+                /*<div>
+                    <label> </label>
+                    <input> </input>
+                </div> */
+                let smallInputContainer = document.createElement('div');
+                smallInputContainer.classList.add('small-input-div');
+
+                let label = document.createElement('label');
+                // label.classList.add('simple-input-label');
+                label.classList.add('simple-label');
+                label.innerHTML = labelList[i];
+
+                let inputEl = document.createElement('input');
+                if( i === 2)
+                    inputEl.type = 'number';
+                else
+                    inputEl.type = 'text';
+                inputEl.classList.add('input-element');
+
+                inputList.push(inputEl);
+
+                //Adding elements in sub-container
+                smallInputContainer.appendChild(label);
+                smallInputContainer.appendChild(inputEl);
+
+                //Adding sub-container to main container
+                inputContainerDiv.appendChild(smallInputContainer);
+            }
+
+            let button = document.createElement('button');
+            button.classList.add('simple-button');
+            button.innerHTML = 'Add' + '<i class="ri-add-fill"></i>';
+
+            mainContainer.appendChild(button);
+
+            button.addEventListener('click', () => {
+                console.log(`Uneta je prodavnica: ${inputList[0].value}.`);
+                console.log(`Prodavnica se nalazi na adresi: ${inputList[1].value}.`);
+                console.log(`Prodavnica ima: ${inputList[2].value} polica za racunare!`);
                 
-                let selectElement = document.createElement("select");
-                selectElement.classList.add('select-list');
+                //FIXME: Samo odkomentarisi, radi kako treba!
+                //Provere da li je sve uneseno se desavaju na backend-u!
+                // fetch(`https://localhost:5001/ComputerStore/DodajProdavnicu/${inputList[0].value}/${inputList[1].value}/${inputList[2].value}`,{
+                //     method:"POST"
+                // });
+                
+                inputList.forEach(e => {
+                    e.value = '';
+                });
+                console.log('Dodato!');
+                
+            });
 
-                smallDivContainer.appendChild(secondLabelList[i]);
-                smallDivContainer.appendChild(selectElement);
+        });
 
-                selectList.push(selectElement);
-                storeInputDiv.appendChild(smallDivContainer);
+        //FIXME: Add computer to store:
+        //Dodajemo nesto sto postoji na nesto sto vec postoji, nema
+        //potrebe da updejtujemo podatke, osim za prodavnice, 
+        //mada, mozda bi i trebalo ako pretrazujemo veze? 
+        //A mozemo i po vezama da pretrazujemo, bmk.
+        selectSubList[1].addEventListener('click', () => {
+            console.log('Add computer to store');
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
+
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+
+            mainContainer.appendChild(inputContainerDiv);
+
+            let labelList = ['Computer:', 'Store:'];
+
+            let selectList = [];
+
+
+
+            for(let i = 0; i < labelList.length; i++) {
+                let smallInputContainer = document.createElement('div');
+                smallInputContainer.classList.add('small-input-div');
+
+                let label = document.createElement('label');
+                // label.classList.add('simple-input-label');
+                label.classList.add('simple-label');
+                label.innerHTML = labelList[i];
+
+                let inputEl = document.createElement('select');
+                inputEl.classList.add('simple-input-list');
+
+                selectList.push(inputEl);
+
+                //Adding elements in sub-container
+                smallInputContainer.appendChild(label);
+                smallInputContainer.appendChild(inputEl);
+
+                //Adding sub-container to main container
+                inputContainerDiv.appendChild(smallInputContainer);
             }
 
-            //Dodajemo sve racunare koje ima ova kompanija u prvu select-list u;
-            this.computerList.forEach(s => {
-                let option = document.createElement('option');
-                option.classList.add('option');
-                option.text = s.name;
-                option.value = s.id;
-                selectList[0].appendChild(option);
+            this.computerList.forEach(c => {
+                let opt = document.createElement('option');
+                opt.value = c.id;
+                opt.text = c.name;
+                selectList[0].appendChild(opt);
             });
 
-            //Dodajemo sve prodavnice koje 'drzi' ova kompanija u drugu select-list u;
             this.storeList.forEach(s => {
-                let option = document.createElement('option');
-                option.classList.add('option');
-                option.text = s.name;
-                option.value = s.id;
-                selectList[1].appendChild(option);
+                let opt = document.createElement('option');
+                opt.value = s.id;
+                opt.text = s.name;
+                selectList[1].appendChild(opt);
+            }); 
+
+            let button = document.createElement('button');
+            button.classList.add('simple-button');
+            button.innerHTML = 'Append' + '<i class="ri-add-fill"></i>';
+
+            mainContainer.appendChild(button);
+
+            button.addEventListener('click', () => {
+                console.log(`Prodavnica: ${this.storeList[selectList[1].selectedIndex].name} & ${this.storeList[selectList[1].selectedIndex].id}`);
+                console.log(`Racunar: ${this.computerList[selectList[0].selectedIndex].name} & ${this.computerList[selectList[0].selectedIndex].id}`);
             });
-
-            //Kreiramo dugme koje ce da prosledi nase izabrane podatke iz select-list a u bazu podataka;
-            let buttonSave = document.createElement('button');
-            buttonSave.classList.add('button');
-            buttonSave.classList.add('store-method-btn');
-            buttonSave.innerHTML = 'Save' + '<i class="fa-solid fa-check-double"></i>';
-
-            //Event za 'Save' dugme;
-            buttonSave.addEventListener('click', saveData => {
-                console.log(`Racunar: ${selectList[0].value}/${selectList[0].text} dodat u prodavnicu: ${selectList[1].value}/${selectList[1].text}!`);
-            });
-
-            //Dodajemo samo dugme u '.store-input-container' div u body-ju;
-            storeInputDiv.appendChild(buttonSave);
 
         });
 
-        buttonReturnAllStores.addEventListener('click', returnAllStoresMethod => {
-            //Posto koristimo isti kontejner za input nekih korisnickih podataka, prvo moramo da prethodni obrisemo;
-            this.checkAndClear();
+        //FIXME: Show all stores with locations:
+        selectSubList[2].addEventListener('click', () => {
+            console.log('Show all stores with locations');
+            this.closeLeftMenu();
+            this.clearAndRemove();
 
-            //Sam kontejner za input;
-            let storeInputDiv = document.createElement('div');
-            // storeInputDiv.classList.add('.store-table-container');
-            storeInputDiv.classList.add('table-container');
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
 
+            //Container for chosing store by name and button to confirm
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
 
-            //Dodajemo kontejner u body;
-            this.inputContainer = storeInputDiv;
-            this.container.appendChild(storeInputDiv);
+            //Appending to body
+            mainContainer.appendChild(inputContainerDiv);
 
-            let table = document.createElement('table');
-            table.classList.add('table');
-            table.classList.add('table-store');
+            let selectList = document.createElement('select');
+            selectList.classList.add('simple-input-list');
 
-            let listaTabela = ["Name", "Address", "Size"];
-            listaTabela.forEach(s => {
-                let th = document.createElement("th");
-                th.classList.add('table-head');
-                th.classList.add('table-head-store');
-                let text = document.createTextNode(s);
+            this.storeList.forEach(store => {
+                let opt = document.createElement('option');
+                opt.value = store.id;
+                opt.text = store.name;
+                selectList.appendChild(opt);
+            });
 
-                th.appendChild(text);
-                table.appendChild(th);
-            })
+            //Adding select list to body
+            inputContainerDiv.appendChild(selectList);
+            
+            let button = document.createElement('button');
+            button.classList.add('simple-button');
+            button.innerHTML = 'Check' + '<i class="ri-question-mark"></i>';
 
-            this.storeList.forEach(s => {
-                let row = table.insertRow();
-                row.classList.add('table-row')
-                row.classList.add('table-row-store');
-                let listaOpcija = [s.name, s.address, s.size];
-                for (let key in listaOpcija) {
-                    let cell = row.insertCell();
-                    cell.classList.add('table-cell');
-                    let text = document.createTextNode(listaOpcija[key]);
-                    cell.appendChild(text);
-                }
-            })
+            inputContainerDiv.appendChild(button);
 
-            storeInputDiv.appendChild(table);
+            button.addEventListener('click', () => {
 
-        });
+                this.clearAndDelete(document.querySelector('.display-store-container'))
 
-        buttonShowOccupience.addEventListener('click', showOccupience => {
-            this.checkAndClear();
+                //Id of selected store in list
+                let storeId = this.storeList[selectList.selectedIndex].id;
+                console.log(storeId);
+                //For displaying store info and all computers inside chosen store
+                let displayStore = document.createElement('div');
+                displayStore.classList.add('display-store-container');
 
-            let storeInputDiv = document.createElement('div');
-            // storeInputDiv.classList.add('store-status-container');
-            storeInputDiv.classList.add('status-container');
-            storeInputDiv.classList.add('status-container-store');
+                mainContainer.appendChild(displayStore);
 
-            this.inputContainer = storeInputDiv;
-            this.container.appendChild(storeInputDiv);
+                //Chosing store by uniqueId in this.storeList
+                let chosenStore;
+                this.storeList.forEach( el => {
+                    if(el.id == storeId)
+                        chosenStore = el;
+                });
 
-            fetch("https://localhost:5001/ComputerStore/VratiZauzetostSvihProdavnica")
-            .then(p => {
-                p.json().then(stores => {
-                    stores.forEach(store => {
+                // console.log(chosenStore);
 
-                        console.log(store);
-                        
-                        let smallDivContainer = document.createElement('div');
-                        smallDivContainer.classList.add('data-show-div-container');
+                //Container for address!
+                let addr = document.createElement('h3');
+                addr.classList.add('simple-info-label');
+                addr.innerHTML = 'Address: ' + chosenStore.address;
 
-                        let nameLabel = document.createElement('label');
-                        nameLabel.classList.add('data-show-label');
-                        nameLabel.innerHTML = store.name;
+                displayStore.appendChild(addr);
 
-                        let occupience = document.createElement('label');
-                        occupience.classList.add('data-show-label');
-                        occupience.innerHTML = `[${store.occupied} / ${store.shelfs}]`;
+                let displayData = document.createElement('div');
+                displayData.classList.add('display-store-container-data');
+                
+                //Popravljeno, ne mozemo odjednom da vratimo 2 objekta iz nekog
+                //Razloga, iako sam siguran da nije dubina veca od 3, a kamo li
+                //32, al ajde
+                //FIXME: Popravljeno malo sutra, iz nekog razloga lepo mi stampa
+                //vrednosti na konzolu kao niz, ali ne kao i pojedninacne..
 
-                        let smallerDivContainer = document.createElement('div');
-                        smallerDivContainer.classList.add('smaller-div-container');
+                let newComputerList = [];
+                fetch(`https://localhost:5001/ComputerStore/VratiSveRacunareProdavnice/${storeId}`, {
+                    method:"GET"
+                })
+                .then(p => {
+                    p.json().then(computers => {
+                        computers.forEach(computer => {
+                            // console.log(prodavnica);
+                            computer.racunari.forEach(s => {
+                                let comp = new Computer(s.computerId, s.computerName, s.computerPrice, null, s.image);
+                                // comp.drawMyselfToCard()
+                            })
+                            // comp.name = computer.computerName;
 
-                        let occupied = document.createElement('div');
-                        occupied.classList.add('occupied-status');
-                        occupied.innerHTML = ' ';
-                        occupied.style.width = `${(100 / store.shelfs) * store.occupied}%`
-
-                        let shelfs = document.createElement('div');
-                        shelfs.classList.add('shelfs-status');
-                        shelfs.innerHTML = ' ';
-                        shelfs.style.width = `${100}%`;
-                        
-                        smallerDivContainer.appendChild(occupied);
-                        smallerDivContainer.appendChild(shelfs);
-
-                        smallDivContainer.appendChild(nameLabel);
-                        smallDivContainer.appendChild(smallerDivContainer);
-                        smallDivContainer.appendChild(occupience);
-
-                        storeInputDiv.appendChild(smallDivContainer);
                             
+                            //For drawing data to info part of this method!
+                            // comp.drawMyselfToStoreInfo(displayData);
+                        })
+                    })
+                })
+            })
+
+
+
+        });
+
+        //FIXME: Show occupancy:
+        //Sve radi, sve ok
+        selectSubList[3].addEventListener('click', () => {
+            console.log('Show occupancy');
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
+
+            let cont = document.createElement('div');
+            cont.classList.add('main-container-occupancy');
+            mainContainer.appendChild(cont);
+
+            //FIXME: Mozda cu morati da sve dodam na .input-container-div
+
+            //Draw yourself to body!
+            this.storeList.forEach(q => {
+                q.drawMyOccupancy(cont);
+            })
+
+        });
+
+        //FIXME: Pazi sad, ovo dugacko zeznuto
+        selectSubList[4].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
+
+            //Zato sto imamo puno elemenata, pa moramo nekako da ih 
+            //prikazemo na velicinu ekrana, tj, morace da se crtaju do
+            //dna ekrana pa i dalje
+            let deepContainer = document.createElement('div');
+            deepContainer.classList.add('deep-main-container');
+            mainContainer.appendChild(deepContainer);
+
+            //Za odabir prodavnice cije stvari zelimo da crtamo
+            let inputContainer = document.createElement('div');
+            inputContainer.classList.add('input-container-div');
+            deepContainer.appendChild(inputContainer);
+
+            //Container za listu prodavnica i labelu
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('small-input-div');
+            inputContainer.appendChild(inputContainerDiv);
+
+            //Labela
+            let label = document.createElement('label');
+            label.classList.add('simple-label');
+            label.innerHTML = 'Select store:'
+            inputContainerDiv.appendChild(label);
+
+            //Lista
+            let list = document.createElement('select');
+            list.classList.add('simple-input-list');
+            inputContainerDiv.appendChild(list);
+
+            //Dodavanje opcija u listu
+            this.storeList.forEach(s => {
+                let opt = document.createElement('option');
+                opt.text = s.name;
+                opt.value = s.id;
+                list.appendChild(opt);
+            })
+
+            //Dugme za potvrdu 
+            let button = document.createElement('button');
+            button.classList.add('simple-button');
+            button.innerHTML = 'Browse' + '<i class="ri-search-2-line"></i>';
+            inputContainer.appendChild(button);
+
+            //Za crtanje 'kartica' na body
+            let browseContainer = document.createElement('div');
+            browseContainer.classList.add('browse-container');
+            browseContainer.classList.add('big-screen-bit-smaller-cards');
+            deepContainer.appendChild(browseContainer);
+
+
+            //FIXME: Proveri za racunare sa back-end-a da dobijes podatke, 
+            //sakako mozes i odavde sa this.storeList[i].computerList da izuces,
+            //ali mozda i to bude zeznuto!
+            button.addEventListener('click', () => {
+
+                //Za ciscenje podataka iz prethodno pretrazene prodavnice!
+                if(browseContainer != null)
+                while(browseContainer.firstChild)
+                    browseContainer.removeChild(browseContainer.lastChild);
+
+                //TODO: Ovo radi, vraca ID izabrane prodavnice
+                //Ajde da probam iz ovih listi, pa kako bude!
+                //Lista prodavnica sadrzi i listu svih racunara i njihove id-jeve
+                let chosenStore = list[list.selectedIndex].value;
+                let storePtr;
+
+                //Biramo prodavnicu
+                let newComputerList = [];
+                fetch(`https://localhost:5001/ComputerStore/VratiSveRacunareProdavnice/${chosenStore}`, {
+                    method:"GET"
+                })
+                .then(p => {
+                    p.json().then(computers => {
+                        console.log(computers);
+                        computers.forEach(computer => {
+                            computer.racunari.forEach(s => {
+                                let comp = new Computer(s.computerId, s.computerName, s.computerPrice, null, s.image);
+                                newComputerList.push(comp);
+                            })
+                        })
+                        console.log(newComputerList);
+                        newComputerList.forEach(s => {
+                            s.drawMyselfToCard(browseContainer);
+                        })
+                    })
+                })
+
+            });
+
+        });
+
+        selectSubList[5].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
+
+            //Container for chosing store by name and button to confirm
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+
+            //Appending to body
+            mainContainer.appendChild(inputContainerDiv);
+
+            //Label & Input line
+            // let smallInputContainer = document.createElement('div');
+            // smallInputContainer.classList.add('small-input-div');
+
+            // inputContainerDiv.appendChild(smallInputContainer);
+
+            let selectList = [];
+            let labelList = ['Name:', 'Image:'];
+            for(let i = 0; i < labelList.length; i++) {
+                
+                //Label & Input line
+                let smallInputContainer = document.createElement('div');
+                smallInputContainer.classList.add('small-input-div');
+    
+                inputContainerDiv.appendChild(smallInputContainer);
+
+                //Label
+                let label = document.createElement('label');
+                label.classList.add('simple-label');
+                label.innerHTML = labelList[i];
+
+                smallInputContainer.appendChild(label);
+
+                //Input
+                let inputEl = document.createElement('input');
+                inputEl.type = 'text';
+                inputEl.classList.add('input-element');
+
+                smallInputContainer.appendChild(inputEl);
+
+                selectList.push(inputEl);
+            }
+            // //Label
+            // let label = document.createElement('label');
+            // label.classList.add('simple-label');
+            // label.innerHTML = 'Name of new computer:';
+
+            // smallInputContainer.appendChild(label);
+
+            // //Input
+            // let inputEl = document.createElement('input');
+            // inputEl.type = 'text';
+            // inputEl.classList.add('input-element');
+
+            // smallInputContainer.appendChild(inputEl);
+
+            //Button
+            let button = document.createElement('button');
+            button.classList.add('simple-button');
+            button.innerHTML = 'Add' + '<i class="ri-add-fill"></i>';
+
+            mainContainer.appendChild(button);
+
+            button.addEventListener('click', () => {
+                // console.log('NAme' + selectList[0].value);
+                // console.log('Image' + selectList[1].value);
+                // console.log('../Images/Computer/RAZER R1 EDITION.png')
+
+                //FIXME: Popravi, nesto ne radi oko slanja podataka, pogledaj i backend za svaki slucaj!
+                // fetch(`https://localhost:5001/ComputerStore/DodajRacunar/${selectList[0].value}/${selectList[1].value}`,{
+                //     method:"POST"
+                // });
+            });
+        });
+
+        selectSubList[6].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            mainContainer.classList.add('make-me-flex-medium-and-up')
+            this.container.appendChild(mainContainer);
+
+            //Container for chosing store by name and button to confirm
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+
+            //Appending to body
+            mainContainer.appendChild(inputContainerDiv);
+
+            let selectList = [];
+            let labelList = ['Type:', 'Hardware:', 'Computer:'];
+            
+            for(let i = 0; i < labelList.length; i++) {
+                //Label & Input line
+                let smallInputContainer = document.createElement('div');
+                smallInputContainer.classList.add('small-input-div');
+    
+                inputContainerDiv.appendChild(smallInputContainer);
+
+                //Label
+                let label = document.createElement('label');
+                label.classList.add('simple-label');
+                label.innerHTML = labelList[i];
+
+                smallInputContainer.appendChild(label);
+
+                //Dropdown list
+                let selectElement = document.createElement('select');
+                selectElement.classList.add('simple-input-list');
+
+                smallInputContainer.appendChild(selectElement);
+                selectList.push(selectElement);
+
+                inputContainerDiv.appendChild(smallInputContainer);
+            }
+
+            //Button for confirm
+            let button = document.createElement('button');
+            button.classList.add('simple-button');
+            button.innerHTML = 'Add' + '<i class="ri-add-fill"></i>';
+
+            inputContainerDiv.appendChild(button);
+
+            //Image of component
+            let img = document.createElement('img');
+            img.classList.add('component-body-image');
+            mainContainer.appendChild(img);
+
+            let data = document.createElement('label');
+            data.classList.add('simple-label');
+            data.classList.add('add-padding-to-bottom');
+            mainContainer.appendChild(data);
+
+            button.addEventListener('click', () => {
+                // console.log(selectList[0].options[selectList[0].selectedIndex].value);
+                let hardw = selectList[1].options[selectList[1].selectedIndex].value;
+                let comp = selectList[2].options[selectList[2].selectedIndex].value;
+
+                fetch(`https://localhost:5001/ComputerStore/DodajKomponentuRacunaru/${comp}/${hardw}`, {
+                    method:"POST"
+                });
+            })
+
+            let computersList = [];
+            fetch('https://localhost:5001/ComputerStore/VratiSveRacunare', {
+                method:"GET"
+            }).then(p => {
+                p.json().then(computers => {
+                    computers.forEach(computer => {
+                        computersList.push(computer);
+                    })
+                    computersList.forEach(s => {
+                        let opt = document.createElement('option');
+                        opt.text = s.computerName;
+                        opt.value = s.id;
+                        selectList[2].appendChild(opt);
+                    })
+                })
+            })
+
+            let typesList = [];
+            fetch(`https://localhost:5001/ComputerStore/VratiSveTipove`, {
+                method:"GET"
+            }).then(p => {
+                p.json().then(types => {
+                    types.forEach(type => {
+                        typesList.push(type);
+                    })
+                    typesList.forEach(s => {
+                        // console.log(s);
+                        let opt = document.createElement('option');
+                        opt.text = s.componenaTip;
+                        opt.value = s.id;
+                        selectList[0].appendChild(opt);
+                    })
+
+                    selectList[0].addEventListener('click', () => {
+                        let listaHardvera = [];
+                        console.log(selectList[0].options[selectList[0].selectedIndex].value);
+                        fetch(`https://localhost:5001/ComputerStore/VratiSveOvogTipa/${selectList[0].options[selectList[0].selectedIndex].value}`, {
+                            method:"GET"
+                        }).then(p => {
+                            p.json().then(hardwares => {
+                                hardwares.forEach(hardware => {
+                                    listaHardvera.push(hardware);
+                                })
+                                while(selectList[1].firstChild)
+                                    selectList[1].removeChild(selectList[1].lastChild);
+
+                                console.log(listaHardvera);
+                                listaHardvera.forEach(s => {
+                                    let opt = document.createElement('option');
+                                    opt.text = s.hardwareName;
+                                    opt.value = s.id;
+                                    selectList[1].appendChild(opt);
+                                })
+                                selectList[1].addEventListener('click', () => {
+                                    let pom = listaHardvera[selectList[1].selectedIndex];
+                                    let hardver = new Hardware(null, null, null, pom.hardwareInfo, pom.hardwarePrice, pom.image);
+
+                                    hardver.drawImageToExistingImage(img, data);
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        });
+
+        selectSubList[7].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
+
+            //Container for browsing cards
+            let deepContainer = document.createElement('div');
+            deepContainer.classList.add('deep-main-container');
+            mainContainer.appendChild(deepContainer);
+
+            //Container for chosing store by name and button to confirm
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+
+            //Appending to body
+            deepContainer.appendChild(inputContainerDiv);
+
+            //For label and select list
+            let smallInputContainer = document.createElement('div');
+            smallInputContainer.classList.add('small-input-div');
+
+            inputContainerDiv.appendChild(smallInputContainer);
+
+            //Label
+            let label = document.createElement('label');
+            label.classList.add('simple-label');
+            label.innerHTML = 'Computer:';
+
+            smallInputContainer.appendChild(label);
+
+            //Drop-down list
+            let selectEl = document.createElement('select');
+            selectEl.classList.add('simple-input-list');
+
+            smallInputContainer.appendChild(selectEl);
+
+            //Button
+            let button = document.createElement('button');
+            button.classList.add('simple-button');
+            button.innerHTML = 'Check' + '<i class="ri-question-mark"></i>';
+
+            inputContainerDiv.appendChild(button);
+
+            let browseContainer = document.createElement('div');
+            browseContainer.classList.add('browse-container');
+            deepContainer.appendChild(browseContainer);
+
+            button.addEventListener('click', () => {
+                let listaKomponenti = [];
+                fetch(`https://localhost:5001/ComputerStore/VratiHardverOvogRacunara/${selectEl.options[selectEl.selectedIndex].value}`, {
+                    method:"GET"
+                }).then(p => {
+                    p.json().then(hardwares => {
+                        hardwares.forEach(hardware => {
+                            hardware.hardver.forEach(s => {
+                                // console.log(s);
+                                let komponenta = new Hardware(s.hardver.id, s.hardver.hardwareName, s.hardver.tipID, s.hardver.hardwareInfo, s.hardver.hardwarePrice, s.hardver.image);
+                                listaKomponenti.push(komponenta);
+                            })
+                            //Cistimo kontejner od prethodnog stampanja!
+                            if(browseContainer.firstChild)
+                                while(browseContainer.firstChild)
+                                    browseContainer.removeChild(browseContainer.lastChild);
+                            
+                            //TODO: ovo do sad radi lepo, imamo listu hardvera!
+                            listaKomponenti.forEach(s => {
+                                s.drawHardwareToCard(browseContainer);
+                            })
+                        })
+                    })
+                })
+                // console.log(selectEl.options[selectEl.selectedIndex].value);
+            });
+
+            let computersList = [];
+            fetch('https://localhost:5001/ComputerStore/VratiSveRacunare', {
+                method:"GET"
+            }).then(p => {
+                p.json().then(computers => {
+                    computers.forEach(computer => {
+                        computersList.push(computer);
+                    })
+                    computersList.forEach(s => {
+                        let opt = document.createElement('option');
+                        opt.text = s.computerName;
+                        opt.value = s.id;
+                        selectEl.appendChild(opt);
+                    })
+                })
+            })
+        });
+
+        selectSubList[8].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
+
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+
+            //Appending to body
+            mainContainer.appendChild(inputContainerDiv);
+
+            let listComputers = [];
+            fetch(`https://localhost:5001/ComputerStore/VratiSveRacunare`, {
+                method:"GET"
+            }).then(p => {
+                p.json().then(computers => {
+                    computers.forEach(computer => {
+                        listComputers.push(computer);
+                    })
+
+                    //For label and select list
+                    let smallInputContainer = document.createElement('div');
+                    smallInputContainer.classList.add('small-input-div');
+
+                    inputContainerDiv.appendChild(smallInputContainer);
+
+                    //Label
+                    let label = document.createElement('label');
+                    label.classList.add('simple-label');
+                    label.innerHTML = 'Computer:';
+
+                    smallInputContainer.appendChild(label);
+
+                    //Drop-down list
+                    let selectEl = document.createElement('select');
+                    selectEl.classList.add('simple-input-list');
+
+                    smallInputContainer.appendChild(selectEl);
+
+                    listComputers.forEach(s => {
+                        let opt = document.createElement('option');
+                        opt.text = s.computerName;
+                        opt.value = s.id;
+                        selectEl.appendChild(opt);
+                    })
+
+                    smallInputContainer = document.createElement('div');
+                    smallInputContainer.classList.add('small-input-div');
+
+                    inputContainerDiv.appendChild(smallInputContainer);
+
+                    //Label
+                    label = document.createElement('label');
+                    label.classList.add('simple-label');
+                    label.innerHTML = 'New Price:';
+
+                    smallInputContainer.appendChild(label);
+
+                    //New Price input:
+                    let inputEl = document.createElement('input');
+                    inputEl.type = 'number';
+                    inputEl.classList.add('input-element');
+
+                    smallInputContainer.appendChild(inputEl);
+
+                    //Button
+                    let button = document.createElement('button');
+                    button.classList.add('simple-button');
+                    button.innerHTML = 'Change' + '<i class="fa-solid fa-check"></i>';
+
+                    inputContainerDiv.appendChild(button);
+
+                    label = document.createElement('lable');
+                    label.classList.add('old-price-label');
+                    label.innerHTML = 'Old Price: ';
+
+                    mainContainer.appendChild(label);
+
+                    button.addEventListener('click', () => {
+                        //FIXME: Popravi CORS-e da omogucis da se vrsi PUT 
+                        fetch(`https://localhost:5001/ComputerStore/IzmeniCenuRacunara/${selectEl.options[selectEl.selectedIndex].value}/${inputEl.value}`, {
+                            method:"PUT"
+                        });
+                    });
+
+                    selectEl.addEventListener('click', () => {
+                        label.innerHTML = 'Old Price: ' + listComputers[selectEl.selectedIndex].computerPrice + '<i class="ri-coins-line"></i>';
+                    })
+                })
+            })
+        });
+
+        selectSubList[9].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
+
+            //Container for browsing cards
+            let deepContainer = document.createElement('div');
+            deepContainer.classList.add('deep-main-container');
+            mainContainer.appendChild(deepContainer);
+
+            //For label, select list and button
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+
+            //Appending to body
+            deepContainer.appendChild(inputContainerDiv);
+
+            let listComputers = [];
+            fetch(`https://localhost:5001/ComputerStore/VratiSveRacunare`, {
+            method:"GET"}).then(p => {
+                p.json().then(computers => {
+                    computers.forEach(computer => {
+                        listComputers.push(computer);
+                    })
+
+                    let smallInputContainer = document.createElement('div');
+                    smallInputContainer.classList.add('small-input-div');
+
+                    inputContainerDiv.appendChild(smallInputContainer);
+
+                    //Label
+                    let label = document.createElement('label');
+                    label.classList.add('simple-label');
+                    label.innerHTML = 'Computer:';
+
+                    smallInputContainer.appendChild(label);
+
+                    //Drop-down list
+                    let selectEl = document.createElement('select');
+                    selectEl.classList.add('simple-input-list');
+
+                    smallInputContainer.appendChild(selectEl);
+
+                    listComputers.forEach(s => {
+                        let opt = document.createElement('option');
+                        opt.text = s.computerName;
+                        opt.value = s.id;
+                        selectEl.appendChild(opt);
+                    })
+
+                    let button = document.createElement('button');
+                    button.classList.add('simple-button');
+                    button.innerHTML = 'Show' + '<i class="ri-search-line"></i>';
+
+                    inputContainerDiv.appendChild(button);
+
+                    let browseContainer = document.createElement('div');
+                    browseContainer.classList.add('browse-container');
+                    deepContainer.appendChild(browseContainer);
+
+                    button.addEventListener('click', () => {
+                        let listHardwares = [];
+                        fetch(`https://localhost:5001/ComputerStore/VratiHardverOvogRacunara/${selectEl.options[selectEl.selectedIndex].value}`, {
+                        method:"GET"})
+                        .then(p => {
+                            p.json().then(hardwares => {
+                                hardwares.forEach(hardware => {
+                                    hardware.hardver.forEach(s => {
+                                        // console.log(s);
+                                        let komponenta = new Hardware(s.hardver.id, s.hardver.hardwareName, s.hardver.tipID, s.hardver.hardwareInfo, s.hardver.hardwarePrice, s.hardver.image);
+                                        listHardwares.push(komponenta);
+                                    })
+                                    //Cistimo kontejner od prethodnog stampanja!
+                                    if(browseContainer.firstChild)
+                                        while(browseContainer.firstChild)
+                                            browseContainer.removeChild(browseContainer.lastChild);
+                                    
+                                    //TODO: ovo do sad radi lepo, imamo listu hardvera!
+                                    listHardwares.forEach(s => {
+                                        //FIXME: Isto kao i u prosloj, samo omoguci da se obavi DELETE! FIXME:
+                                        s.drawToCardForRemoving(browseContainer, selectEl.options[selectEl.selectedIndex].value);
+                                    })
+                                })
+                            })
+                        })
                     });
                 })
             })
         });
-    }
 
-    drawComputerMenu() {
-        //Selectros
+        //FIXME: Radi, samo prepravi kad se sve komponente skinu iz korpe
+        //FIXME: da opet moze da se crta, sve okej ovako izgleda
+        selectSubList[10].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
 
-        const nameList = ['Add computer', 'Add component', 'All computers', 'Where to buy?', 
-                          'Computer specs?', 'Change price', 'Remove component'];
-        const imageList = ['<i class="fa-solid fa-plus"></i>', '<i class="fa-solid fa-square-plus"></i>',
-                           '<i class="fa-solid fa-list"></i>', '<i class="fa-solid fa-magnifying-glass-location"></i>', 
-                           '<i class="fa-solid fa-puzzle-piece"></i>', '<i class="fa-solid fa-money-bill-1-wave"></i>',
-                           '<i class="fa-solid fa-trash-can"></i>'];
-        
-        let buttonList = [];
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
 
-        for(let i = 0; i < nameList.length; i++) {
-            let button = document.createElement('button');
-            button.classList.add('button');
-            button.classList.add('computer-method-btn');
-            button.innerHTML = nameList[i] + imageList[i];
+            //Container for browsing cards
+            let deepContainer = document.createElement('div');
+            deepContainer.classList.add('deep-main-container');
+            mainContainer.appendChild(deepContainer);
 
-            buttonList.push(button);
-        }
+            let browseContainer = document.createElement('div');
+            browseContainer.classList.add('browse-container');
+            deepContainer.appendChild(browseContainer);
 
-        //Pravimo kontejner za dugmice/metode za prodavnicu
-        const containerMethods = document.createElement('div');
-        containerMethods.classList.add('method-container');
-        for(let i = 0; i < buttonList.length; i++) {
-            containerMethods.appendChild(buttonList[i]);
-        }
-        console.log("Lista dugmica: ");
-        console.log(buttonList);
-    
-        this.container.appendChild(containerMethods);
-        containerMethods.style.background = this.container.style.background;
-
-        //Events
-
-        //Add Computer to Company (database)
-        //Arguments: computerName
-        buttonList[0].addEventListener('click', () => {
-            console.log('Kliknuli ste da dodate racunar u bazu podataka');
-
-            //Cistimo sta god da se naslo ovde u medjuvremenu;
-            this.checkAndClear();
-
-            let computerInputDiv = document.createElement('div');
-            computerInputDiv.classList.add('input-container');
-
-            this.inputContainer = computerInputDiv;
-            this.container.appendChild(computerInputDiv);
-
-            let smallDivContainer = document.createElement('div');
-            smallDivContainer.classList.add('small-div-container');
-            smallDivContainer.classList.add('small-div-lightgreen');
-
-            let label = document.createElement('label');
-            label.classList.add('simple-label');
-            label.innerHTML = 'Computer name:';
-
-            let input = document.createElement('input');
-            input.type = 'text';
-            input.classList.add('input-element');
-
-            smallDivContainer.appendChild(label);
-            smallDivContainer.appendChild(input);
-
-            let button = document.createElement('button');
-            button.classList.add('button');
-            button.classList.add('computer-method-btn');
-            button.innerHTML = 'Save' + '<i class="fa-solid fa-check-double"></i>';
-
-            button.addEventListener('click', () => {
-                //Zameni sa fetch/update
-                // let comp = new Computer();
-                // comp.name = input.text;
-                // Dodaj tek kad budes spreman da menjas bazu iz js-a;
-                // this.computerList.push(comp);
-
-                console.log(`Dodajemo u bazu racunar sa imenom: ${input.value}!`);
-            });
-
-            computerInputDiv.appendChild(smallDivContainer);
-            computerInputDiv.appendChild(button);
+            let computersList = [];
+            fetch('https://localhost:5001/ComputerStore/VratiSveRacunare', {
+            method:"GET"}).then(p => {
+                p.json().then(computers => {
+                    computers.forEach(computer => {
+                        console.log(computer);
+                        let comp = new Computer(computer.id, computer.computerName, computer.computerPrice, null, computer.image);
+                        computersList.push(comp);
+                    })
+                    console.log(computersList);
+                    computersList.forEach(s => {
+                        s.drawMyselfToCard(browseContainer);
+                    })
+                })
+            })
         });
 
-        //Add component to computer
-        //Arguments: computerName, hardwareName
-        buttonList[1].addEventListener('click', () => {
-            console.log('Kliknuli ste da dodate komponentu racunaru');
-            this.checkAndClear();
+        //FIXME: Dovrsi samo za ove hardver metode, ne moras sve, ima vec
+        //FIXME: dovoljno, i vidi za css sa onim razlicitim dimenzijama
+        //FIXME: ekrana da radi!
+        selectSubList[11].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
 
-            let computerInputDiv = document.createElement('div');
-            computerInputDiv.classList.add('input-container');
+            //Main container
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
 
-            this.inputContainer = computerInputDiv;
-            this.container.appendChild(computerInputDiv);
+            //For scroll on input
+            let deepContainer = document.createElement('div');
+            deepContainer.classList.add('deep-main-container');
+            deepContainer.classList.add('make-me-flex-medium-and-up');
+            deepContainer.classList.add('add-padding-bottom-medium-and-up')
+            mainContainer.appendChild(deepContainer);
 
-            let labelNames = ['Computer:', 'Hardware:']
+            //For label, select list/input and button
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+            inputContainerDiv.classList.add('input-div-two-in-row-flex');
+
+            //Appending to body
+            deepContainer.appendChild(inputContainerDiv);
+
+            let labelList = ['Name:', 'Type:', 'Info:', 'Price:', 'Image:'];
+            let typesList = ['text', 'input', 'text', 'number', 'text'];
+
+            //Da ne bi koristili querySelector, ovo je brze jer odmah imamo 
+            //Pokazivac na trazenu komponentu
             let selectList = [];
+            let selectEl;
 
-            for(let i = 0; i < 2; i++) {
-                //Kreiramo kontejner za select element i labelu
-                let smallDivContainer = document.createElement('div');
-                smallDivContainer.classList.add('small-div-container');
-                smallDivContainer.classList.add('small-div-lightgreen');
+            for(let i = 0; i < labelList.length; i++) {
+            //For all label and input combination!
+                let smallInputContainer = document.createElement('div');
+                smallInputContainer.classList.add('small-input-div');
 
-                //Kreiramo labelu
+                inputContainerDiv.appendChild(smallInputContainer);
+
+                //Labela kao uputstvo sta da unesemo od podataka ovde
                 let label = document.createElement('label');
-                label.innerHTML = labelNames[i];
+                label.classList.add('simple-label');
+                label.innerHTML = labelList[i];
 
-                //Kreiramo select element
-                let selectElement = document.createElement("select");
-                selectElement.classList.add('select-list');
+                //Svakako uvek ide labela pre inputa tako da nema potrebe da
+                //dva puta ovo dodajemo!
+                smallInputContainer.appendChild(label);
 
-                //Obican selektor da bi mogo da pristupim van petlje
-                selectList.push(selectElement);
+                if(i == 1) {
+                    let typesList = [];
+                    fetch(`https://localhost:5001/ComputerStore/VratiSveTipove`, {
+                        method:"GET"
+                    }).then(p => {
+                        p.json().then(types => {
+                            types.forEach(type => {
+                                typesList.push(type);
+                            })
+                            selectEl = document.createElement('select');
+                            selectEl.classList.add('simple-input-list');
 
-                //Dodajemo elemetne u kontejner
-                smallDivContainer.appendChild(label);
-                smallDivContainer.appendChild(selectElement);
+                            typesList.forEach(s => {
+                                let opt = document.createElement('option');
+                                opt.text = s.componenaTip;
+                                opt.value = s.id;
+                                selectEl.appendChild(opt);
+                            })
 
-                computerInputDiv.appendChild(smallDivContainer);
+                            //Cuvanje 'pokazivaca' na ovu komponentu
+                            // selectList[i] = selectEl;
+                            smallInputContainer.appendChild(selectEl);
+                        })
+                    })
+                }
+                else {
+                    let inputEl = document.createElement('input');
+                    inputEl.classList.add('input-element');
+                    inputEl.type = typesList[i];
+
+                    //Cuvanje 'pokazivaca' na ovu komponentu
+                    selectList.push(inputEl);
+
+                    smallInputContainer.appendChild(inputEl);
+
+                }
+
             }
 
-            //Dodajemo elemente listama za odabir
-            this.computerList.forEach( s => {
-                let option = document.createElement('option');
-                option.classList.add('option');
-                option.text = s.name;
-                option.value = s.id;
-                selectList[0].appendChild(option);
-            });
-
-            this.hardwareList.forEach( s => {
-                let option = document.createElement('option');
-                option.classList.add('option');
-                option.text = s.name;
-                option.value = s.id;
-                selectList[1].appendChild(option);
-            });
-
+            //Dugme za potvrdu kreiranja nove komponente
             let button = document.createElement('button');
-            button.classList.add('button');
-            button.classList.add('computer-method-btn');
-            button.innerHTML = 'Save' + '<i class="fa-solid fa-check-double"></i>';
+            button.classList.add('simple-button');
+            button.innerHTML = 'Add' + '<i class="ri-add-line"></i>';
+
+            inputContainerDiv.appendChild(button);
+
 
             button.addEventListener('click', () => {
-                console.log(`Racunaru: ${this.computerList[selectList[0].selectedIndex].name} je dodata komponenta: ${this.hardwareList[selectList[1].selectedIndex].name}!`);
-            });
-
-            // computerInputDiv.appendChild(smallDivContainer);
-            computerInputDiv.appendChild(button);
-
-        });
-
-        //Arguments: none
-        buttonList[2].addEventListener('click', () => {
-            console.log('Kliknuli ste da vratite sve racunare iz baze podataka');
-            this.checkAndClear();
-
-            let computerInputDiv = document.createElement('div');
-            computerInputDiv.classList.add('table-container');
-
-            //Dodajemo kontejner u body;
-            this.inputContainer = computerInputDiv;
-            this.container.appendChild(computerInputDiv);
-
-            let table = document.createElement('table');
-            table.classList.add('table');
-            table.classList.add('table-computer');
-
-            let listaTabela = ["Name", "Price [RSD]"];
-            listaTabela.forEach(s => {
-                let th = document.createElement("th");
-                th.classList.add('table-head');
-                th.classList.add('table-head-computer');
-                let text = document.createTextNode(s);
-
-                th.appendChild(text);
-                table.appendChild(th);
-            })
-
-            this.computerList.forEach(s => {
-                let row = table.insertRow();
-                row.classList.add('table-row')
-                row.classList.add('table-row-computer');
-                let listaOpcija = [s.name, s.price];
-                for (let key in listaOpcija) {
-                    let cell = row.insertCell();
-                    cell.classList.add('table-cell');
-                    let text = document.createTextNode(listaOpcija[key]);
-                    cell.appendChild(text);
-                }
-            })
-
-            computerInputDiv.appendChild(table);
-
-        });
-
-        //Arguments: computerName
-        buttonList[3].addEventListener('click', () => {
-            console.log('Kliknuli ste gde da kupite ovaj racunar');
-            this.checkAndClear();
-            // this.checkForSuper();
-
-            let superContainer = document.createElement('div');
-            // superContainer.classList.add('method-container');   //Koristimo method-container kako bi se automatski obrisala prilikom poziva checkAndClear()? 
-            superContainer.classList.add('method-container-super');
-
-            let computerInputDiv = document.createElement('div');
-            computerInputDiv.classList.add('input-container-computer');
-
-            this.inputContainer = superContainer;
-            this.container.appendChild(superContainer);
-
-            superContainer.appendChild(computerInputDiv);
-
-            //Kreiramo kontejner za labelu i select listu
-            let smallDivContainer = document.createElement('div');
-            smallDivContainer.classList.add('small-div-container');
-            smallDivContainer.classList.add('small-div-lightgreen');
-
-            let label = document.createElement('label');
-            label.classList.add('simple-label');
-            label.innerHTML = 'Computer:';
-
-            let selectElement = document.createElement('select');
-            selectElement.classList.add('select-list');
-
-            //Dodajemo opcije u select listu
-            this.computerList.forEach( s => {
-                let option = document.createElement('option');
-                option.text = s.name;
-                option.value = s.id;
-                selectElement.appendChild(option);
-            });
-
-            smallDivContainer.appendChild(label);
-            smallDivContainer.appendChild(selectElement);
-
-            computerInputDiv.appendChild(smallDivContainer);
-
-            let button = document.createElement('button');
-            button.classList.add('button');
-            button.classList.add('computer-method-btn');
-            button.innerHTML = 'Check' + '<i class="fa-solid fa-circle-question"></i>';
-
-            button.addEventListener('click', () => {
-
-                if(document.querySelector('.table-computer') != null) {
-                    this.emptyContainer(document.querySelector('.table-computer'));
-                    this.inputContainer.removeChild(document.querySelector('.table-computer'));
-                }
-
-                let resultList = [];
-
-                //Problem je stoje async, ne moze tako koliko vidim, mora da bude odmah odgovor!
-                //Sve ostalo mi se cini da radi super
-                fetch(`https://localhost:5001/ComputerStore/GdeMoguDaKupimOvajRacunar/${this.computerList[selectElement.selectedIndex].name}`)
-                .then(p => {
-                    p.json().then(computers => {
-                        computers.forEach(computer => {
-                            console.log(computer);
-                            resultList.push(computer);
-                        });
-
-                        let table = document.createElement('table');
-                        table.classList.add('table');
-                        table.classList.add('table-computer');
-
-                        console.log('ovde smo!');
-
-                        let listaTabela = ["Store", "Address"];
-                        listaTabela.forEach(s => {
-                            let th = document.createElement("th");
-                            th.classList.add('table-head');
-                            th.classList.add('table-head-computer');
-                            let text = document.createTextNode(s);
-
-                            th.appendChild(text);
-                            table.appendChild(th);
-                        })
-
-                        console.log(resultList.length);
-
-                        resultList.forEach(s => {
-                            let row = table.insertRow();
-                            row.classList.add('table-row')
-                            row.classList.add('table-row-computer');
-                            let listaOpcija = [s.prodavnica, s.adresa];
-                            for (let key in listaOpcija) {
-                                let cell = row.insertCell();
-                                cell.classList.add('table-cell');
-                                let text = document.createTextNode(listaOpcija[key]);
-                                cell.appendChild(text);
-                            }
-                        })
-
-                        console.log('ovde smo!');
-
-                        superContainer.appendChild(table);
-                    })
-                })
-
-                console.log(resultList);
-
-                // let table = document.createElement('table');
-                // table.classList.add('table');
-                // table.classList.add('table-computer');
-
-                // console.log('ovde smo!');
-
-                // let listaTabela = ["Store", "Address"];
-                // listaTabela.forEach(s => {
-                //     let th = document.createElement("th");
-                //     th.classList.add('table-head');
-                //     th.classList.add('table-head-computer');
-                //     let text = document.createTextNode(s);
-
-                //     th.appendChild(text);
-                //     table.appendChild(th);
-                // })
-
-                // console.log(resultList.length);
-
-                // resultList.forEach(s => {
-                //     let row = table.insertRow();
-                //     row.classList.add('table-row')
-                //     row.classList.add('table-row-computer');
-                //     let listaOpcija = [s.prodavnica, s.adresa];
-                //     for (let key in listaOpcija) {
-                //         let cell = row.insertCell();
-                //         cell.classList.add('table-cell');
-                //         let text = document.createTextNode(listaOpcija[key]);
-                //         cell.appendChild(text);
-                //     }
-                // })
-
-                // console.log('ovde smo!');
-
-                // superContainer.appendChild(table);
-
-            });
-
-            // computerInputDiv.appendChild(smallDivContainer);
-            computerInputDiv.appendChild(button);
-
-        });
-
-        //Arguments: computerName
-        buttonList[4].addEventListener('click', () => {
-            console.log('Kliknuli ste da vratite sav hardver ovog racunara');
-            this.checkAndClear();
-
-            let superContainer = document.createElement('div');
-            // superContainer.classList.add('method-container');   //Koristimo method-container kako bi se automatski obrisala prilikom poziva checkAndClear()? 
-            superContainer.classList.add('method-container-super');
-
-            let computerInputDiv = document.createElement('div');
-            computerInputDiv.classList.add('input-container-computer');
-
-            this.inputContainer = superContainer;
-            this.container.appendChild(superContainer);
-
-            superContainer.appendChild(computerInputDiv);
-
-            let smallDivContainer = document.createElement('div');
-            smallDivContainer.classList.add('small-div-container');
-            smallDivContainer.classList.add('small-div-lightgreen');
-
-            let label = document.createElement('label');
-            label.classList.add('simple-label');
-            label.innerHTML = 'Computer:';
-
-            let selectElement = document.createElement('select');
-            selectElement.classList.add('select-list');
-
-            //Dodajemo opcije u select listu
-            this.computerList.forEach( s => {
-                let option = document.createElement('option');
-                option.text = s.name;
-                option.value = s.id;
-                selectElement.appendChild(option);
-            });
-
-            smallDivContainer.appendChild(label);
-            smallDivContainer.appendChild(selectElement);
-
-            computerInputDiv.appendChild(smallDivContainer);
-
-            let button = document.createElement('button');
-            button.classList.add('button');
-            button.classList.add('computer-method-btn');
-            button.innerHTML = 'Check ' + '<i class="fa-solid fa-circle-question"></i>';
-
-            computerInputDiv.appendChild(button);
-
-            superContainer.appendChild(computerInputDiv);
-
-            button.addEventListener('click', () => {
-
-                if(document.querySelector('.table-computer') != null) {
-                    this.emptyContainer(document.querySelector('.table-computer'));
-                    this.inputContainer.removeChild(document.querySelector('.table-computer'));
-                }
-
-                let hardwareList = [];
-
-                fetch(`https://localhost:5001/ComputerStore/KojiJeHardverOvogRacunara/${this.computerList[selectElement.selectedIndex].name}`)
-                .then(p => {
-                    p.json().then(computer => {
-                        computer.forEach(hardware => {
-                            console.log(hardware);
-                            hardwareList.push(hardware);
-                            // console.log(computer);
-                        });
-                        let table = document.createElement('table');
-                        table.classList.add('table');
-                        table.classList.add('table-computer');
-
-                        let listaTabela = ["Component", "Type", "Price"];
-                        listaTabela.forEach(s => {
-                            let th = document.createElement("th");
-                            th.classList.add('table-head');
-                            th.classList.add('table-head-computer');
-                            let text = document.createTextNode(s);
-
-                            th.appendChild(text);
-                            table.appendChild(th);
-                        })
-
-                        console.log(hardwareList.length);
-
-                        hardwareList.forEach(s => {
-                            let row = table.insertRow();
-                            row.classList.add('table-row')
-                            row.classList.add('table-row-computer');
-                            let listaOpcija = [s.nazivKomponente, s.tipKomponente, s.cenaKomopnente];
-                            for (let key in listaOpcija) {
-                                let cell = row.insertCell();
-                                cell.classList.add('table-cell');
-                                let text = document.createTextNode(listaOpcija[key]);
-                                cell.appendChild(text);
-                            }
-                        })
-                        // console.log('ovde smo!');
-
-                        superContainer.appendChild(table);
-
-                    })
-                })
-
-                // let table = document.createElement('table');
-                // table.classList.add('table');
-                // table.classList.add('table-computer');
-
-                // let listaTabela = ["Component", "Type", "Price"];
-                // listaTabela.forEach(s => {
-                //     let th = document.createElement("th");
-                //     th.classList.add('table-head');
-                //     th.classList.add('table-head-computer');
-                //     let text = document.createTextNode(s);
-
-                //     th.appendChild(text);
-                //     table.appendChild(th);
-                // })
-
-                // console.log(hardwareList.length);
-
-                // hardwareList.forEach(s => {
-                //     let row = table.insertRow();
-                //     row.classList.add('table-row')
-                //     row.classList.add('table-row-computer');
-                //     let listaOpcija = [s.nazivKomponente, s.tipKomponente, s.cenaKomponente];
-                //     for (let key in listaOpcija) {
-                //         let cell = row.insertCell();
-                //         cell.classList.add('table-cell');
-                //         let text = document.createTextNode(listaOpcija[key]);
-                //         cell.appendChild(text);
-                //     }
-                // })
-                // // console.log('ovde smo!');
-
-                // superContainer.appendChild(table);
-            });
-        });
-
-        //Arguments: computerName, newPrice
-        buttonList[5].addEventListener('click', () => {
-            console.log('Kliknuli ste da promenite cenu ovog racunara');
-            this.checkAndClear();
-
-            let computerInputDiv = document.createElement('div');
-            computerInputDiv.classList.add('input-container');
-
-            this.inputContainer = computerInputDiv;
-            this.container.appendChild(computerInputDiv);
-
-            let smallDivContainer = document.createElement('div');
-            smallDivContainer.classList.add('small-div-container');
-            smallDivContainer.classList.add('small-div-lightgreen');
-
-            let label = document.createElement('label');
-            label.classList.add('simple-label');
-            label.innerHTML = 'Computer:';
-
-            let selectElement = document.createElement('select');
-            selectElement.classList.add('select-list');
-
-            //Dodajemo opcije u select listu
-            this.computerList.forEach( s => {
-                let option = document.createElement('option');
-                option.text = s.name;
-                option.value = s.id;
-                selectElement.appendChild(option);
-            });
-
-            smallDivContainer.appendChild(label);
-            smallDivContainer.appendChild(selectElement);
-
-            computerInputDiv.appendChild(smallDivContainer);
-
-            let button = document.createElement('button');
-            button.classList.add('button');
-            button.classList.add('computer-method-btn');
-            button.innerHTML = 'Check ' + '<i class="fa-solid fa-circle-question"></i>';
-
-            computerInputDiv.appendChild(button);
-
-            button.addEventListener('click', () => {
-
-                //Ne brise se sve, da ne bi pisao jos jednu funkciju samo za to
-                //vidi nekako da ih na pocetku proveris i odmah i obrises ako postoje,
-                //ako ne, ne radi nista sa brisanjem!
-                //P.S. - Sve ostalo radi koliko vidim, mozes sliku za 'coin' da promenis, 
-                //a moze i bez toga, sta me briga; 
-                let list = [];
-                if(list = document.querySelectorAll('.for-removing') != null) {
-                    console.log(list.length);
-                }
-
-                let container = document.createElement('div');
-                container.classList.add('small-div-container');
-                container.classList.add('small-div-lightgreen');
-                container.classList.add('for-removing');
-
-                let secondLabel = document.createElement('label');
-                secondLabel.classList.add('simple-label');
-                secondLabel.classList.add('simple-label-wide');
-                secondLabel.innerHTML = `Old price: ${this.computerList[selectElement.selectedIndex].price} RSD  ` + `<i class="fa-solid fa-coin-front"></i>`;
-
-                container.appendChild(secondLabel);
-                computerInputDiv.appendChild(container);
-
-                container = null;
-                secondLabel = null;
-
-                container = document.createElement('div');
-                container.classList.add('small-div-container');
-                container.classList.add('small-div-lightgreen');
-                container.classList.add('for-removing');
-
-                secondLabel = document.createElement('label');
-                secondLabel.classList.add('simple-label');
-                secondLabel.innerHTML = 'New price:';
-
-                let inputElement = document.createElement('input');
-                inputElement.classList.add('input-store');
-                inputElement.type = 'number';
-
-                container.appendChild(secondLabel);
-                container.appendChild(inputElement);
-
-                computerInputDiv.appendChild(container);
-
-                let secondButton = document.createElement('button');
-                secondButton.classList.add('button');
-                secondButton.classList.add('computer-method-btn');
-                secondButton.classList.add('for-removing');
-                secondButton.innerHTML = 'Change ' + '<i class="fa-solid fa-circle-check"></i>';
-
-                computerInputDiv.appendChild(secondButton);
-
-                secondButton.addEventListener('click', () => {
-                    console.log(`Nova cena je: ${inputElement.value} RSD!`);
-                    // this.computerList[selectElement.selectedIndex].price = inputElement.value;
+                console.log(`Name: ${selectList[0].value}`);
+                console.log(`Tip: ${selectEl.options[selectEl.selectedIndex].text} i sifra: ${selectEl.options[selectEl.selectedIndex].value}`);
+                console.log(`Info: ${selectList[1].value}`);
+                console.log(`Price: ${selectList[2].value}`);
+                console.log(`Image src: ${selectList[3].value}`);
+                fetch(`https://localhost:5001/ComputerStore/DodajHardver/${selectList[0].value}/${selectEl.options[selectEl.selectedIndex].value}/${selectList[1].value}/${selectList[2].value}/${selectList[3].value}`, {
+                    method:"POST"
                 });
-            });
+            })
 
         });
 
-        //Arguments: computerName, hardwareName
-        buttonList[6].addEventListener('click', () => {
-            console.log('Kliknuli ste da obrisete komponentu iz racunara');
+        selectSubList[12].addEventListener('click', () => {
+            this.closeLeftMenu();
+            this.clearAndRemove();
+
+            //Main container
+            let mainContainer = document.createElement('div');
+            mainContainer.classList.add('main-container-div');
+            this.container.appendChild(mainContainer);
+
+            //Container for browsing cards
+            let deepContainer = document.createElement('div');
+            deepContainer.classList.add('deep-main-container');
+            mainContainer.appendChild(deepContainer);
+
+            //For label, select list and button
+            let inputContainerDiv = document.createElement('div');
+            inputContainerDiv.classList.add('input-container-div');
+            //Appending to body
+            deepContainer.appendChild(inputContainerDiv);
+
+            //For chosing components by type
+            let browseContainer = document.createElement('div');
+            browseContainer.classList.add('browse-container');
+            //Appending to body
+            deepContainer.appendChild(browseContainer);
+
+            //For label and select list
+            let smallInputContainer = document.createElement('div');
+            smallInputContainer.classList.add('small-input-div');
+
+            inputContainerDiv.appendChild(smallInputContainer);
+
+            let label = document.createElement('label');
+            label.classList.add('simple-label');
+            label.innerHTML = 'Filter:';
+
+            smallInputContainer.appendChild(label);
+
+            let typesList = [];
+            fetch(`https://localhost:5001/ComputerStore/VratiSveTipove`, {
+                method:"GET"
+            }).then(p => {
+                p.json().then(types => {
+                    types.forEach(type => {
+                        typesList.push(type);
+                    })
+                    let selectEl = document.createElement('select');
+                    selectEl.classList.add('simple-input-list');
+
+                    smallInputContainer.appendChild(selectEl);
+
+                    let option = document.createElement('option');
+                    option.text = 'All Components';
+                    option.value = 0;
+
+                    selectEl.appendChild(option);
+
+                    typesList.forEach(s => {
+                        let opt = document.createElement('option');
+                        opt.text = s.componenaTip;
+                        opt.value = s.id;
+                        selectEl.appendChild(opt);
+                    })
+
+
+                    selectEl.addEventListener('click', () => {
+
+                        let hardwaresList = [];
+
+                        //Cistimo prethodnu pretragu!
+                        while(browseContainer.firstChild)
+                            browseContainer.removeChild(browseContainer.lastChild);
+
+                        //Da li se trazu svi racunari?
+                        if(selectEl.options[selectEl.selectedIndex].value == 0) {
+                            fetch(`https://localhost:5001/ComputerStore/VratiSavHardver`, {
+                            method:"GET"}).then(p => {
+                                p.json().then(hardwares => {
+                                    hardwares.forEach(hardver => {
+                                        let h = new Hardware(hardver.id, hardver.hardwareName, hardver.tipID, hardver.hardwareInfo, hardver.hardwarePrice, hardver.image);
+                                        hardwaresList.push(h);
+                                    })
+                                    hardwaresList.forEach(s => {
+                                        s.drawHardwareToCard(browseContainer);
+                                    })
+                                })
+                            })
+                        }
+                        else {
+                            // let hardwaresList = [];
+                            fetch(`https://localhost:5001/ComputerStore/VratiSveOvogTipa/${selectEl.options[selectEl.selectedIndex].value}`, {
+                            method:"GET"}).then(p => {
+                                p.json().then(hardwares => {
+                                    hardwares.forEach(hardver => {
+                                        let h = new Hardware(hardver.id, hardver.hardwareName, hardver.tipID, hardver.hardwareInfo, hardver.hardwarePrice, hardver.image);
+                                        hardwaresList.push(h);
+                                    })
+                                    hardwaresList.forEach(s => {
+                                        s.drawHardwareToCard(browseContainer);
+                                    })
+                                })
+                            })
+                        }
+                    })
+                })
+            })
+
+            // let hardwaresList = [];
+            // fetch(`https://localhost:5001/ComputerStore/VratiSavHardver`, {
+            // method:"GET"}).then(p => {
+            //     p.json().then(hardwares => {
+            //         hardwares.forEach(hardver => {
+            //             let h = new Hardware(hardver.id, hardver.hardwareName, hardver.tipID, hardver.hardwareInfo, hardver.hardwarePrice, hardver.image);
+            //             hardwaresList.push(h);
+            //         })
+            //         hardwaresList.forEach(s => {
+            //             s.drawHardwareToCard(browseContainer);
+            //         })
+
+            //     })
+            // })
+
+
         });
+
+
     }
 
-    //Za brisanje menija za izabor metoda
-    emptySecondContainer() {
-        if(document.querySelector('.second-container') != null) {
-            let child = this.container.lastElementChild; 
-            while (child) {
-                this.container.removeChild(child);
-                child = this.container.lastElementChild;
+    //Just read the name of function..
+    clearLeftMenu() {
+        let pom = document.querySelector('.header-nav-sub-items-container');
+        if(pom != null) {
+            while(pom.firstChild) {
+                pom.removeChild(pom.lastChild);
             }
+            pom.remove();
         }
     }
 
-    //Za brisanje svih deteta koji se nalaze u prosledjenom kontejneru
-    emptyContainer(thisContainer) {
-        let child = thisContainer.lastElementChild;
-        while(child) {
-            thisContainer.removeChild(child);
-            child = thisContainer.lastElementChild;
-        }
-        thisContainer.remove;
+    //For closing left menu on function call!
+    closeLeftMenu() {
+        document.querySelector('.header-nav-sub').classList.remove('show-subMenu');
     }
 
-    //Metoda za ciscenje input-a ili tabele ukoliko postoji
-    checkAndClear() {
-        //Posto koristimo isti kontejner za input nekih korisnickih podataka, prvo moramo da prethodni obrisemo;
-        if(document.querySelector('.input-container') != null) {
-            this.emptyContainer(document.querySelector('.input-container'));
-            this.container.removeChild(document.querySelector('.input-container'));
-            this.inputContainer = null;
+    clearAndRemove() {
+        let pom = document.querySelector('.main-container-div');
+        if(pom != null) {
+            while(pom.firstChild)
+                pom.removeChild(pom.lastChild);
+            document.querySelector('.main-container').removeChild(pom);
         }
-        else {
-            if(this.inputContainer != null) {
-                this.emptyContainer(this.inputContainer);
-                this.inputContainer.remove();
-                this.inputContainer = null;
-            }
-        }
+    }
 
-        if(document.querySelector('.store-table-container') != null) {
-            this.emptyContainer(document.querySelector('.store-table-container'));
-            this.container.removeChild(document.querySelector('.store-table-container'));
-            this.inputContainer = null;
-        } 
-        else {
-            if(this.inputContainer != null) {
-                this.emptyContainer(this.inputContainer);
-                this.inputContainer.remove();
-                this.inputContainer = null;
-            }
-        }
-
-        if(document.querySelector('.status-container') != null) {
-            this.emptyContainer(document.querySelector('.status-container'));
-            this.container.removeChild(document.querySelector('.status-container'));
-            this.inputContainer = null;
-        } 
-        else {
-            if(this.inputContainer != null) {
-                this.emptyContainer(this.inputContainer);
-                this.inputContainer.remove();
-                this.inputContainer = null;
-            }
+    clearAndDelete(host) {
+        if(host != null) {
+            while(host.firstChild)
+                host.removeChild(host.lastChild);
+            host.parentNode.removeChild(host);
         }
     }
 }

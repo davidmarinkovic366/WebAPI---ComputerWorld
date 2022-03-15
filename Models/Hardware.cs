@@ -21,9 +21,14 @@ namespace Models {
         public string HardwareInfo { get; set; }   
         /*String za informacije, npr. 12Gb GDDR6 256bit 1024CUDA...*/
 
+        public string Image { get; set; }
+        /*Slika komponente koja se nalazi na serveru (putanja do nje)*/
+
         [Required]
         public int HardwarePrice { get; set; }
         /*Koliko kosta ovaj hardver?*/
+
+
 
         
 
