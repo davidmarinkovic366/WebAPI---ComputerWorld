@@ -1312,7 +1312,7 @@ input[type=number] {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        /* width: 70%; */
+        width: 85%;
         /* padding-bottom: 4rem; */
     }
 
@@ -1512,6 +1512,10 @@ input[type=number] {
 
     .main-card-item {
         width: 22%;
+    }
+
+    .deep-main-container {
+        width: 95%;
     }
 
     .browse-container {

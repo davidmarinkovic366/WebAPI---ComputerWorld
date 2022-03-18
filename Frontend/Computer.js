@@ -130,39 +130,25 @@ export class Computer {
     drawAddToCart() {
         //TODO: Uhvati cart menu
         //Ok, radi
-        const cart = document.querySelector('.header-nav-cart');
-        let deepCont = cart.querySelector('header-nav-cart-deep-container');
-        // cart.style.background = "red";
+        
+        let deepCont = document.querySelector('.header-nav-cart-deep-container');
 
-        //Ako prvi put dodajemo, moramo da dodamo i dugme!
-        if(cart.firstChild == null) {
+        // console.log(deepCont);
+
+        //Ako prvi put dodajemo?
+        if(deepCont == null) {
             
-            //Dodajemo pre svega dugme za potvrdu kupovine
-            // let confirmBtn = document.createElement('btn');
-            // confirmBtn.classList.add('header-nav-cart-confirm');
-            // confirmBtn.innerHTML = 'Confirm:' + this.price + '<i class="ri-coins-line"></i>';
+             const cart = document.querySelector('.header-nav-cart');
 
             let deepContainer = document.createElement('div');
             deepContainer.classList.add('header-nav-cart-deep-container');
             cart.appendChild(deepContainer);
-            // cart.appendChild(confirmBtn);
 
             this.drawSmallCard(deepContainer);
 
         }
-        else {  //Inace samo dodajemo karticu i update dugme cenu!
-            //Posto vec postoji, nema potrebe da ga ponovo pravimo, samo ga uhvatimo i dodamo na njega sliku
-            let cont = document.querySelector('.header-nav-cart-deep-container');
-            // console.log(cont);
-            this.drawSmallCard(cont);
-
-            //Hvatamo dugme kako bi promenili innerHTML i dodali cenu novog uredjaja
-            // let btn = cart.querySelector('.header-nav-cart-confirm');  
-            // let cenaString = btn.innerHTML - '<i class="ri-coins-line"></i>';
-            // let novaCena = parseInt(cenaString) + this.price;
-
-            // //Dodajemo novu cenu na dugme!
-            // btn.innerHTML = novaCena + '<i class="ri-coins-line"></i>';
+        else {  //Inace samo dodajemo karticu!
+            this.drawSmallCard(deepCont);
         }
 
 

@@ -53,7 +53,7 @@ namespace WebAPI.Controllers
                 if(type == null) {
                     return BadRequest("Ovaj tip komponente ne postoji u bazi podataka!");
                 }                
-                else {}
+                else {
 
                     Hardware nova = new Hardware();
                     nova.HardwareName = name;
@@ -70,6 +70,7 @@ namespace WebAPI.Controllers
                     catch(Exception ex) {
                         return BadRequest(ex.Message);
                     }
+                }
             }
         }
 
